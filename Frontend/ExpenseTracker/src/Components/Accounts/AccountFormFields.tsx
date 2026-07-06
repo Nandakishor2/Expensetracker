@@ -29,12 +29,7 @@ function AccountFormFields({ accountDetails, onChange }: accountFormData) {
                     onChange={onChange} />
             </div>
             <div className="sm:col-span-4">
-                <SelectGroup id="drpAccountType"
-                    name="drpAccountType"
-                    labelName="ACCOUNT TYPE"
-                    value={accountDetails.accountType}
-                    dropdownItems={{ "": "Select Account", "savings": "Savings", "current": "Current" }}
-                    onChange={onChange} />
+
             </div>
             {/* Row 2 */}
             <div className="sm:col-span-4">
@@ -49,12 +44,10 @@ function AccountFormFields({ accountDetails, onChange }: accountFormData) {
                 <TextGroup id="txtClosingBalance"
                     name="txtClosingBalance"
                     labelName="CLOSING BALANCE"
-                    value={String(accountDetails.closingBalance)}
+                    value={String(accountDetails)}
                     placeholder="Please provide your closing balance"
                     type="number"
-                    onChange={(e) => {
-                        setClosingBalance(Number(e.target.value))
-                    }} />
+                    onChange={onChange} />
             </div>
             <div className="sm:col-span-4"></div>
             {/* Row 3 */}
