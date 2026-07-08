@@ -3,3 +3,4 @@ pydantic
 uvicorn[standard]
 pymongo
 dotenv
+certifi

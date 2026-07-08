@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from Exceptions.handlers import expenseExceptionHandler,genericExceptionHandler
 from Exceptions.Base import ExpenseTrackerException
+from API.Accounts import accountRouter
 app = FastAPI()
 
 app.add_exception_handler(ExpenseTrackerException , expenseExceptionHandler)
@@ -17,3 +18,5 @@ def healthCheck():
     return{
         "status" : "OK"
     }
+
+app.include_router(accountRouter)

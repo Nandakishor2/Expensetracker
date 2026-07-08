@@ -1,7 +1,7 @@
 from Connections.MongoDB import mongoDB
 from Schema.Accounts import AccountSchema
 from bson.objectid import ObjectId
-from pymongo.return_document import ReturnDocument
+from pymongo import ReturnDocument
 
 def inserAccountDetails(accountDetails :AccountSchema ) -> str:
     try:
