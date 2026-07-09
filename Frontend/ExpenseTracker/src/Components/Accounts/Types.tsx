@@ -1,12 +1,19 @@
 type AccountDetails = {
     accountID: string
     ifscCode: string
-    accountType: "Current" | "Savings"
+    accountType: "current" | "savings"
     bankName: string
-    closingbalance: number
+    closingBalance: number
     createdDate: string
     updatedDate: string
 }
+type CreateAccount = {
+    accountID: string
+    ifscCode: string
+    accountType: "current" | "savings"
+    bankName: string
+    closingBalance: number
+}
 
 
-export type { AccountDetails }
+export type { AccountDetails, CreateAccount }

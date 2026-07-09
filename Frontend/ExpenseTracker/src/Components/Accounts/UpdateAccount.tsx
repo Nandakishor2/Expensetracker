@@ -3,17 +3,21 @@ import { useState } from "react"
 import type { AccountDetails } from "./Types"
 import AccountFormFields from "./AccountFormFields"
 
-function AddAccount() {
+type AccountUpdateProps = {
+    existingAccountDetails: AccountDetails
+}
+
+function UpdateAccount({ existingAccountDetails }: AccountUpdateProps) {
     const defaultAccountDetails: AccountDetails = {
         accountID: "",
         bankName: "",
-        accountType: "savings",
+        accountType: "Savings",
         ifscCode: "",
         closingBalance: 0.0,
         createdDate: "",
         updatedDate: ""
     }
-    const [accountDetails, setAccountDetails] = useState<AccountDetails>(defaultAccountDetails)
+    const [accountDetails, setAccountDetails] = useState<AccountDetails>(existingAccountDetails)
 
     return (
         <div className="grid sm:grid-cols-12 mt-5 gap-2">
@@ -30,11 +34,11 @@ function AddAccount() {
                     setAccountDetails(defaultAccountDetails)
                 }} className="text-sm">Clear</Button>
                 <Button type="button" variant="primary" onClick={() => {
-                    console.log("Account Creation", accountDetails)
-                }} className="text-sm">Add</Button>
+                    console.log("Account Update", accountDetails)
+                }} className="text-sm">Update</Button>
             </div>
         </div>
     )
 }
 
-export default AddAccount
+export default UpdateAccount
