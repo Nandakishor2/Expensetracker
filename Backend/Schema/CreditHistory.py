@@ -6,6 +6,7 @@ from Models.CreditHistory import CreditHistory
 
 
 class CreditHistorySchema(CreditHistory,AuditFields):
+    creditHistoryID : str = Field(...,description="Auto Generated Unique Identifier")
     pass
 
 

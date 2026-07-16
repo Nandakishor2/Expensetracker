@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from Exceptions.handlers import expenseExceptionHandler,genericExceptionHandler
 from Exceptions.Base import ExpenseTrackerException
 from API.Accounts import accountRouter
+from API.People import peopleRouter
+
+from Connections.MongoDB import checkConnection
 app = FastAPI()
 
 app.add_exception_handler(ExpenseTrackerException , expenseExceptionHandler)
@@ -20,3 +23,4 @@ def healthCheck():
     }
 
 app.include_router(accountRouter)
+app.include_router(peopleRouter)

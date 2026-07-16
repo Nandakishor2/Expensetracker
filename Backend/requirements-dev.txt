@@ -4,3 +4,4 @@ uvicorn[standard]
 pymongo
 dotenv
 certifi
+pydantic[email]
