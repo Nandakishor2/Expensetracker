@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from Exceptions.handlers import expenseExceptionHandler,genericExceptionHandler
 from Exceptions.Base import ExpenseTrackerException
 from API.Accounts import accountRouter
+from API.People import peopleRouter
+
+from Connections.MongoDB import checkConnection
 from API.Loans import loanRouter
 app = FastAPI()
 
@@ -35,4 +38,3 @@ def healthCheck():
     }
 
 app.include_router(accountRouter)
-app.include_router(loanRouter)

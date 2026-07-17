@@ -4,7 +4,7 @@ from typing import Optional
 
 class AuditFields(BaseModel):
     createdDate : datetime = Field(
-        default_factory= lambda : datetime.now(timezone.utc),
+        default_factory= lambda :  datetime.now(timezone.utc),
         description="Record Created Date"
     )
     updatedDate : Optional[datetime] = Field(
