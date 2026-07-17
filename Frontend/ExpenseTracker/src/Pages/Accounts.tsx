@@ -1,22 +1,43 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AddAccount from "../Components/Accounts/AddAccount"
 import { type AccountDetails } from "../Components/Accounts/Types"
 import ListAccounts from "../Components/Accounts/ListAccounts"
 import UpdateAccount from "../Components/Accounts/UpdateAccount"
+import { deleteAccountDetails, getAccountDetails } from "../API/accountAPI"
 
 function Accounts() {
 
-    const [accountDetailsList, setAccountDetailsList] = useState<AccountDetails[]>([{
-        accountID: "1660101000874955",
-        ifscCode: "UBIN0802359",
-        accountType: "current",
-        bankName: "Union Bank of India",
-        closingBalance: 4999999,
-        createdDate: "2026-07-07",
-        updatedDate: "2026-07-07",
-    }])
+    const [accountDetailsList, setAccountDetailsList] = useState<AccountDetails[]>([])
 
     const [selectedAccount, setSelectedAccount] = useState<AccountDetails | null>(null)
+
+    async function refreshAccountsTable() {
+        try {
+            const responseData = await getAccountDetails()
+            console.log(responseData.message)
+            setAccountDetailsList(responseData.accountDetailsList)
+        }
+        catch {
+            console.log("Account Details could not be fetched")
+            setAccountDetailsList([])
+        }
+    }
+
+    async function deleteAccount(accountID: string) {
+        try {
+            const responseData = await deleteAccountDetails(accountID)
+            console.log(responseData.message)
+            refreshAccountsTable()
+        }
+        catch {
+            console.log("Account could not be deleted")
+        }
+    }
+
+    useEffect(() => {
+        refreshAccountsTable()
+
+    }, [])
 
     return (
         <>
@@ -27,16 +48,18 @@ function Accounts() {
             </div>
             {
                 selectedAccount != null ? (
-                    <UpdateAccount existingAccountDetails={selectedAccount} />
+                    <UpdateAccount existingAccountDetails={selectedAccount} refreshTableFunction={refreshAccountsTable} />
                 ) :
-                    (<AddAccount />)
+                    (<AddAccount refreshTableFunction={refreshAccountsTable} />)
             }
 
             <hr className="mt-2 mb-2" />
             <ListAccounts accountDetails={accountDetailsList} onEditAccount={(accountDetails) => {
                 console.log("Edit Account Details", accountDetails)
                 setSelectedAccount(accountDetails)
-            }} />
+            }}
+
+                onDeleteAccount={deleteAccount} />
 
         </>
 

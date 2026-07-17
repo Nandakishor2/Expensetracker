@@ -4,16 +4,23 @@ type AccountDetails = {
     accountType: "current" | "savings"
     bankName: string
     closingBalance: number
-    createdDate: string
-    updatedDate: string
 }
-type CreateAccount = {
-    accountID: string
-    ifscCode: string
-    accountType: "current" | "savings"
-    bankName: string
-    closingBalance: number
-}
+type CreateAccount = AccountDetails
+type UpdateAccount = AccountDetails
 
 
-export type { AccountDetails, CreateAccount }
+// Responses
+type GetAccountDetailsResponse = {
+    accountDetailsList: Array<AccountDetails>
+    message: string
+}
+
+type UpdateAccountDetailsResponse = {
+    message: string,
+    updatedAccountDetails: AccountDetails
+}
+
+type DeleteAccountDetailsResponse = {
+    message: string
+}
+export type { AccountDetails, CreateAccount, UpdateAccount, GetAccountDetailsResponse, UpdateAccountDetailsResponse, DeleteAccountDetailsResponse }

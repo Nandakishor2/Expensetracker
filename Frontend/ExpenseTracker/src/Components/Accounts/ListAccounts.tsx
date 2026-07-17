@@ -1,13 +1,15 @@
 import Text from "../UI/Text"
 import { type AccountDetails } from "./Types"
 import { FaEdit } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 
 type accountListType = {
     accountDetails: AccountDetails[]
     onEditAccount: (selectedAccount: AccountDetails) => void
+    onDeleteAccount: (accountID: string) => void
 }
 
-function ListAccounts({ accountDetails, onEditAccount }: accountListType) {
+function ListAccounts({ accountDetails, onEditAccount, onDeleteAccount }: accountListType) {
     return (
         <>
             <table className="w-full border-b border-white/10 pb-3">
@@ -18,8 +20,6 @@ function ListAccounts({ accountDetails, onEditAccount }: accountListType) {
                         <th className="text-left"><Text color="primary" size="body">Account Type</Text></th>
                         <th className="text-left"><Text color="primary" size="body">IFSC Code</Text></th>
                         <th className="text-left"><Text color="primary" size="body">Closing Balance</Text></th>
-                        <th className="text-left"><Text color="primary" size="body">Created Date</Text></th>
-                        <th className="text-left"><Text color="primary" size="body">Updated Date</Text></th>
                         <th className="text-left"><Text color="primary" size="body">Actions</Text></th>
                     </tr>
                 </thead>
@@ -41,13 +41,7 @@ function ListAccounts({ accountDetails, onEditAccount }: accountListType) {
                                     <td className="pt-4 pb-4">
                                         <Text color="primary" size="label">{row.closingBalance}</Text>
                                     </td>
-                                    <td className="pt-4 pb-4">
-                                        <Text color="primary" size="label">{row.createdDate}</Text>
-                                    </td>
-                                    <td className="pt-4 pb-4">
-                                        <Text color="primary" size="label">{row.updatedDate}</Text>
-                                    </td>
-                                    <td>
+                                    <td className="flex gap-4 pt-4 pb-4 ">
                                         <button
                                             type="button"
                                             onClick={() => onEditAccount(row)}
@@ -55,6 +49,16 @@ function ListAccounts({ accountDetails, onEditAccount }: accountListType) {
                                             className="text-green-500 hover:text-green-400"
                                         >
                                             <FaEdit className="text-xl" />
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            className="text-red-500 hover:text-red-400"
+                                            onClick={() => {
+                                                onDeleteAccount(row.accountID)
+                                            }}
+                                        >
+                                            <MdDeleteForever className="text-xl" />
                                         </button>
                                     </td>
 

@@ -21,7 +21,7 @@ function SelectGroup({ id, name, labelName, value, dropdownItems, onChange }: Fo
                             onChange={onChange}
                             className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6">
                             {
-                                Object.entries(dropdownItems).map(([key, value]) => (<option key={key} value={key}>{value}</option>))
+                                Object.entries(dropdownItems).map(([key, value]) => (<option key={key} className="text-black bg-white" value={key}>{value}</option>))
                             }
                         </select>
                     </div>

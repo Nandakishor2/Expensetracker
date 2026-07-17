@@ -2,19 +2,28 @@ import Button from "../UI/Button"
 import { useState } from "react"
 import type { AccountDetails } from "./Types"
 import AccountFormFields from "./AccountFormFields"
+import { createAccount } from "../../API/accountAPI"
 
-function AddAccount() {
+type AddAccountProps = {
+    refreshTableFunction: () => Promise<any>
+}
+
+function AddAccount({ refreshTableFunction }: AddAccountProps) {
+
     const defaultAccountDetails: AccountDetails = {
         accountID: "",
         bankName: "",
         accountType: "savings",
         ifscCode: "",
         closingBalance: 0.0,
-        createdDate: "",
-        updatedDate: ""
+
     }
     const [accountDetails, setAccountDetails] = useState<AccountDetails>(defaultAccountDetails)
 
+    const handleCreateAccount = async () => {
+        await createAccount(accountDetails)
+        refreshTableFunction()
+    }
     return (
         <div className="grid sm:grid-cols-12 mt-5 gap-2">
             <AccountFormFields accountDetails={accountDetails}
@@ -29,9 +38,7 @@ function AddAccount() {
                 <Button type="button" variant="ghost" onClick={() => {
                     setAccountDetails(defaultAccountDetails)
                 }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={() => {
-                    console.log("Account Creation", accountDetails)
-                }} className="text-sm">Add</Button>
+                <Button type="button" variant="primary" onClick={handleCreateAccount} className="text-sm">Add</Button>
             </div>
         </div>
     )

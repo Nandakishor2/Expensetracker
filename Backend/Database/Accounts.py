@@ -2,15 +2,16 @@ from Connections.MongoDB import mongoDB
 from Schema.Accounts import AccountSchema
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
+from Models.Accounts import UpdateAccount
 
 def inserAccountDetails(accountDetails :AccountSchema ) -> str:
     try:
         newAccountID = mongoDB["Accounts"].insert_one(accountDetails.model_dump())
-        return newAccountID.inserted_id
+        return str(newAccountID.inserted_id)
     except Exception as e:
         print(e)
 
-def getAccountDetails(accountID : str) -> dict:
+def findAccountDetails(accountID : str) -> dict:
     try:
         accountDetails : dict | None = mongoDB["Accounts"].find_one(
             {"_id" : ObjectId(accountID)}
@@ -23,10 +24,21 @@ def getAccountDetails(accountID : str) -> dict:
     except Exception as e:
         print(e)
 
-def updateAccountDetails(accountID : str, accountDetails : AccountSchema) -> dict:
+def getAllAccountDetails() -> list:
     try:
-        updatedAccountDetails : dict | None = mongoDB["Accounts"].find_one_and_update(
-            {"_id" : ObjectId(accountID)},
+        accountDetailsList : list | None = mongoDB["Accounts"].find()
+
+        if accountDetailsList is None:
+            raise ValueError("Accounts Not Found")
+
+        return accountDetailsList
+    except Exception as e:
+        print(e)
+
+def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) -> dict:
+    try:
+        updatedAccountDetails : dict = mongoDB["Accounts"].find_one_and_update(
+            {"accountID" : accountID},
             {"$set" : accountDetails.model_dump(
                 exclude_unset=True,
                 exclude_none=True,
@@ -44,8 +56,8 @@ def updateAccountDetails(accountID : str, accountDetails : AccountSchema) -> dic
 
 def deleteAccountDetails(accountID : str) -> bool:
     try:
-        deletedAccount : dict | None = mongoDB["Accounts"].find_one_and_delete(
-            {"_id" : ObjectId(accountID)}
+        deletedAccount : dict = mongoDB["Accounts"].find_one_and_delete(
+            {"accountID" : accountID}
         )
 
         if deletedAccount is None:

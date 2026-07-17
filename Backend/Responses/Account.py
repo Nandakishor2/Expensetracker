@@ -13,5 +13,5 @@ class DeleteAccountResponse(BaseResponse):
     pass
 
 class GetAccountDetailsResponse(BaseResponse):
-    accountDetails : Optional[list[Account]] = Field(None,description="List of Account details retrieved from DB")
+    accountDetailsList : Optional[list[Account]] = Field(None,description="List of Account details retrieved from DB")
     accountDetail : Optional[Account] = Field(None,description="Account details retrieved from DB")

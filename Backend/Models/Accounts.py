@@ -1,5 +1,5 @@
 from pydantic import BaseModel,Field
-
+from typing import Optional
 class Account(BaseModel):
     '''
     Class : Accounts
@@ -27,8 +27,25 @@ class Account(BaseModel):
         ...,
         description="Name of the Bank where the account is"
     )
-    closingbalance : int = Field(
+    closingBalance : int = Field(
         ...,
         description="Actual balance when this record was created"
     )
-    
+
+class UpdateAccount(BaseModel):
+    ifscCode : Optional[str] = Field(
+        None,
+        description="IFSC Code"
+    )
+    accountType : Optional[str] = Field(
+        None,
+        description="Account Type"
+    )
+    bankName : Optional[str] = Field(
+        None,
+        description="Name of the Bank where the account is"
+    )
+    closingBalance : Optional[int] = Field(
+        None,
+        description="Actual balance when this record was created"
+    )

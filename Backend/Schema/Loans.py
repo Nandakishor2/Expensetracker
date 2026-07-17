@@ -1,5 +1,5 @@
 from Models.Audit import AuditFields
 from Models.Loans import Loans
 
-class LoansSchema(Loans,AuditFields):
+class LoanSchema(Loans,AuditFields):
     pass
