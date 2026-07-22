@@ -3,41 +3,53 @@ from Schema.Accounts import AccountSchema
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 from Models.Accounts import UpdateAccount
+from pymongo.errors import DuplicateKeyError
+from Exceptions.pymongo import DatabaseWriteException,DuplicateKeyException,DatabaseReadException,DatabaseUpdateException
+from Exceptions.resource import ResourceNotFoundException
 
-def inserAccountDetails(accountDetails :AccountSchema ) -> str:
+async def inserAccountDetails(accountDetails :AccountSchema ) -> str:
     try:
-        newAccountID = mongoDB["Accounts"].insert_one(accountDetails.model_dump())
-        return str(newAccountID.inserted_id)
+        newAccountID = await mongoDB["Accounts"].insert_one(accountDetails.model_dump())
+        return accountDetails.accountID
+
+    except DuplicateKeyError as e:
+        raise DuplicateKeyException("Account already exists.") from e
     except Exception as e:
-        print(e)
+        logging.exception(e)
+        raise DatabaseWriteException("Issue while inserting data into database.") from e
 
-def findAccountDetails(accountID : str) -> dict:
+async def findAccountDetails(accountID : str) -> dict:
     try:
-        accountDetails : dict | None = mongoDB["Accounts"].find_one(
+        accountDetails : dict | None = await mongoDB["Accounts"].find_one(
             {"_id" : ObjectId(accountID)}
         )
 
         if accountDetails is None:
-            raise ValueError("Account Not Found")
+            raise ResourceNotFoundException("Could not find UserID for the Account. Please check your inputs.")
 
         return accountDetails
-    except Exception as e:
-        print(e)
 
-def getAllAccountDetails() -> list:
+    except ResourceNotFoundException:
+        raise
+    except Exception as e:
+        logging.exception(e)
+        raise DatabaseReadException("Issue while fetching data from database.") from e
+
+async def getAllAccountDetails() -> list:
     try:
-        accountDetailsList : list | None = mongoDB["Accounts"].find()
+        accountDetailsList : list | None = await mongoDB["Accounts"].find().to_list(length=None)
 
         if accountDetailsList is None:
             raise ValueError("Accounts Not Found")
 
         return accountDetailsList
     except Exception as e:
-        print(e)
+        logging.exception(e)
+        raise DatabaseReadException("Issue while fetching data from database.") from e
 
-def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) -> dict:
+async def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) -> dict:
     try:
-        updatedAccountDetails : dict = mongoDB["Accounts"].find_one_and_update(
+        updatedAccountDetails : dict = await mongoDB["Accounts"].find_one_and_update(
             {"accountID" : accountID},
             {"$set" : accountDetails.model_dump(
                 exclude_unset=True,
@@ -54,9 +66,9 @@ def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) -> dic
     except Exception as e:
         print(e)
 
-def deleteAccountDetails(accountID : str) -> bool:
+async def deleteAccountDetails(accountID : str) -> bool:
     try:
-        deletedAccount : dict = mongoDB["Accounts"].find_one_and_delete(
+        deletedAccount : dict = await mongoDB["Accounts"].find_one_and_delete(
             {"accountID" : accountID}
         )
 

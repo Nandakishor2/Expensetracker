@@ -6,10 +6,10 @@ from Services.Accounts import handleInsertAccountDetails,handleGetAccountDetails
 accountRouter = APIRouter(prefix="/accounts",tags=["Accounts"])
 
 @accountRouter.post("/create")
-def createAccount(accountDetails : Account):
-    response : CreateAccountResponse = handleInsertAccountDetails(accountDetails)
+async def createAccount(accountDetails : Account):
+    response : CreateAccountResponse = await handleInsertAccountDetails(accountDetails)
     return JSONResponse(
-        status_code = response.statusCode,
+        status_code = response.status_code,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
     )
 
@@ -30,9 +30,9 @@ def deleteAccount(accountID : str):
     )
 
 @accountRouter.get("/")
-def getAccountDetails():
-    response : GetAccountDetailsResponse = handleGetAccountDetails()
+async def getAccountDetails():
+    response : GetAccountDetailsResponse = await handleGetAccountDetails()
     return JSONResponse(
-        status_code = response.statusCode,
+        status_code = response.status_code,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
     )

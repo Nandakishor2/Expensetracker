@@ -38,3 +38,5 @@ def healthCheck():
     }
 
 app.include_router(accountRouter)
+app.include_router(peopleRouter)
+app.include_router(loanRouter)

@@ -41,17 +41,3 @@ async def checkConnection():
         raise DatabaseConnectionException(
             "MongoDB Connection Failed."
         ) from e
-mongoDB = None
-
-try:
-    mongoDBClient.admin.command("ping")
-    print("Mongo DB Connection Successful.")
-    mongoDB = mongoDBClient["ExpenseTracker"]
-
-    mongoDB["Accounts"].create_index(["accountID"],unique = True)
-
-    mongoDB["Loans"].create_index(["loanID","accountID"],unique = True)
-
-except Exception as e:
-    logging.exception(str(e))
-    raise Exception("Mongo DB Connection Failed.")

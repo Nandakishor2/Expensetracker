@@ -3,9 +3,9 @@ from Models.Accounts import Account,UpdateAccount
 from Responses.Account import CreateAccountResponse,GetAccountDetailsResponse,UpdateAccountResponse,DeleteAccountResponse
 from Schema.Accounts import AccountSchema
 
-def handleInsertAccountDetails(accountDetails : Account) -> CreateAccountResponse:
+async def handleInsertAccountDetails(accountDetails : Account) -> CreateAccountResponse:
     newAccountDetails : AccountSchema = AccountSchema(**accountDetails.model_dump())
-    newAccountID : str = inserAccountDetails(newAccountDetails)
+    newAccountID : str = await inserAccountDetails(newAccountDetails)
     return CreateAccountResponse(
         statusCode = 200,
         message = "New Account created successfully",
@@ -28,8 +28,8 @@ def handleDeleteAccountDetails(accountID : str):
         message = "Account details deleted successfully."
     )
 
-def handleGetAccountDetails():
-    accountDetailsList : list[dict] = getAllAccountDetails()
+async def handleGetAccountDetails():
+    accountDetailsList : list[dict] = await getAllAccountDetails()
 
     return GetAccountDetailsResponse(
         statusCode = 201,
