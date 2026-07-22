@@ -26,3 +26,9 @@ class DatabaseUpdateException(DatabaseException):
 
 class DatabaseDeleteException(DatabaseException):
     status_code = 500
+
+class DatabaseConnectionError(DatabaseException):
+    status_code = 503
+
+class DatabaseServerSelectionTimeoutException(DatabaseException):
+    status_code = 503

@@ -5,9 +5,22 @@ from Exceptions.Base import ExpenseTrackerException
 from API.Accounts import accountRouter
 from API.People import peopleRouter
 
-from Connections.MongoDB import checkConnection
+from Connections.MongoDB import getMongoDBConnection,initializeConnection,closeConnection
 from API.Loans import loanRouter
-app = FastAPI()
+
+from typing import AsyncGenerator
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app :FastAPI):
+    await initializeConnection()
+
+    yield
+
+    await closeConnection()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_exception_handler(ExpenseTrackerException , expenseExceptionHandler)
 app.add_exception_handler(Exception , genericExceptionHandler)
@@ -15,6 +28,8 @@ app.add_exception_handler(Exception , genericExceptionHandler)
 orgins = [
     "http://localhost:5173"
 ]
+
+
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,4 +1,4 @@
-from Connections.MongoDB import mongoDB
+from Connections.MongoDB import getMongoDBConnection
 from Schema.Accounts import AccountSchema
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
@@ -9,6 +9,7 @@ from Exceptions.resource import ResourceNotFoundException
 
 async def inserAccountDetails(accountDetails :AccountSchema ) -> str:
     try:
+        mongoDB = getMongoDBConnection()
         newAccountID = await mongoDB["Accounts"].insert_one(accountDetails.model_dump())
         return accountDetails.accountID
 
@@ -20,6 +21,7 @@ async def inserAccountDetails(accountDetails :AccountSchema ) -> str:
 
 async def findAccountDetails(accountID : str) -> dict:
     try:
+        mongoDB = getMongoDBConnection()
         accountDetails : dict | None = await mongoDB["Accounts"].find_one(
             {"_id" : ObjectId(accountID)}
         )
@@ -37,6 +39,7 @@ async def findAccountDetails(accountID : str) -> dict:
 
 async def getAllAccountDetails() -> list:
     try:
+        mongoDB = getMongoDBConnection()
         accountDetailsList : list | None = await mongoDB["Accounts"].find().to_list(length=None)
 
         if accountDetailsList is None:
@@ -49,6 +52,7 @@ async def getAllAccountDetails() -> list:
 
 async def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) -> dict:
     try:
+        mongoDB = getMongoDBConnection()
         updatedAccountDetails : dict = await mongoDB["Accounts"].find_one_and_update(
             {"accountID" : accountID},
             {"$set" : accountDetails.model_dump(
@@ -68,6 +72,7 @@ async def updateAccountDetails(accountID : str, accountDetails : UpdateAccount) 
 
 async def deleteAccountDetails(accountID : str) -> bool:
     try:
+        mongoDB = getMongoDBConnection()
         deletedAccount : dict = await mongoDB["Accounts"].find_one_and_delete(
             {"accountID" : accountID}
         )

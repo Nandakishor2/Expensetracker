@@ -1,5 +1,5 @@
 
-from .base import ExpenseTrackerException
+from Exceptions.Base import ExpenseTrackerException
 
 class ResourceNotFoundException(ExpenseTrackerException):
     status_code = 404
