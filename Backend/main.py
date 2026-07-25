@@ -4,6 +4,7 @@ from Exceptions.handlers import expenseExceptionHandler,genericExceptionHandler
 from Exceptions.Base import ExpenseTrackerException
 from API.Accounts import accountRouter
 from API.People import peopleRouter
+from API.CreditHistory import creditHistoryRouter
 
 from Connections.MongoDB import getMongoDBConnection,initializeConnection,closeConnection
 from API.Loans import loanRouter
@@ -55,3 +56,4 @@ def healthCheck():
 app.include_router(accountRouter)
 app.include_router(peopleRouter)
 app.include_router(loanRouter)
+app.include_router(creditHistoryRouter)

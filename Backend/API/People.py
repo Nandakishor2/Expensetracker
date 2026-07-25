@@ -10,7 +10,7 @@ peopleRouter = APIRouter(prefix="/people",tags=["People"])
 async def getPeople() -> GetPeopleDetailsResponse:
     response : GetPeopleDetailsResponse = await handleGetPeopleDetails()
     return JSONResponse(
-        status_code= response.status_code,
+        status_code= response.statusCode,
         content=response.model_dump()
     )
 
@@ -18,7 +18,7 @@ async def getPeople() -> GetPeopleDetailsResponse:
 async def createPeople(people : CreatePerson) -> CreatePersonDetailsResponse:
     response : CreatePersonDetailsResponse = await handleCreatePersonDetails(people)
     return JSONResponse(
-        status_code= response.status_code,
+        status_code= response.statusCode,
         content=response.model_dump()
     )
 
@@ -27,7 +27,7 @@ async def updatePeople(personID : str,updateDetails : UpdatePeople) -> UpdatePer
 
     response : UpdatePersonDetailsResponse = await handleUpdatePersonDetails(personID,updateDetails)
     return JSONResponse(
-        status_code= response.status_code,
+        status_code= response.statusCode,
         content=response.model_dump()
     )
 
@@ -35,6 +35,6 @@ async def updatePeople(personID : str,updateDetails : UpdatePeople) -> UpdatePer
 async def deletePeople(personID : str) -> DeletePersonDetailsResponse:
     response : DeletePersonDetailsResponse = await handleDeletePersonDetails(personID)
     return JSONResponse(
-        status_code= response.status_code,
+        status_code= response.statusCode,
         content=response.model_dump()
     )

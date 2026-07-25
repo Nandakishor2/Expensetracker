@@ -14,4 +14,13 @@ class Loans(BaseModel):
     rateOfIntrest : float = Field(..., description="Rate of Intrest offered by the loan")
     emiAmount : float = Field(..., description="EMI Amount payable")
     activeStatus : bool = Field(..., description="Loan Status")
-    
+
+class UpdateLoan(BaseModel):
+    accountID : Optional[str] = Field(None,description="Amount Credited and EMI Deduction bank Account ")
+    companyName : Optional[str] = Field(None, description="Name of the company who issued the loan")
+    purpose : Optional[str] = Field(None, description="Purpose of the loan")
+    loanAmount : Optional[float] = Field(None, description="Amount sanctioned by the company")
+    startDate : Optional[datetime] = Field(None, description="Loan-Start date")
+    emiDate : Optional[int] = Field(None, description="EMI Due Date")
+    rateOfIntrest : Optional[float] = Field(None, description="Rate of Intrest offered by the loan")
+    emiAmount : Optional[float] = Field(None, description="EMI Amount payable")

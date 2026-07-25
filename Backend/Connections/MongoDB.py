@@ -3,6 +3,7 @@ import os
 
 from pymongo import AsyncMongoClient
 from pymongo.server_api import ServerApi
+from pymongo.asynchronous.database import AsyncDatabase
 import certifi
 
 import logging
@@ -25,6 +26,8 @@ mongoClient = None
 async def initializeConnection():
     try:
 
+        global mongoClient,mongoDB
+
         mongoDBClient = AsyncMongoClient(
             url,
             server_api=ServerApi("1"),
@@ -38,6 +41,7 @@ async def initializeConnection():
         
         # Ensure indexes are created asynchronously
         await mongoDB["People"].create_index(["personID"],unique = True)
+        await mongoDB["Loans"].create_index(["loanID"],unique = True)
         print("MongoDB Connection Successful.")
 
     except ServerSelectionTimeoutError as e:
@@ -65,7 +69,7 @@ async def closeConnection():
         logging.exception("Could not close the existing mongoDB Connection")
         raise DatabaseConnectionException("Could not close the existing mongoDB Connection")
 
-def getMongoDBConnection():
+def getMongoDBConnection() -> AsyncDatabase:
     try:
         if mongoDB is not None:
             return mongoDB
