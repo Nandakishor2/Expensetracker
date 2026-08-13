@@ -5,6 +5,10 @@ from Exceptions.Base import ExpenseTrackerException
 from API.Accounts import accountRouter
 from API.People import peopleRouter
 from API.CreditHistory import creditHistoryRouter
+from API.Bills import billRouter
+from API.IncomeSource import incomeSourceRouter
+from API.Schedules import scheduleRouter
+from API.Transactions import transactionRouter
 
 from Connections.MongoDB import getMongoDBConnection,initializeConnection,closeConnection
 from API.Loans import loanRouter
@@ -57,3 +61,7 @@ app.include_router(accountRouter)
 app.include_router(peopleRouter)
 app.include_router(loanRouter)
 app.include_router(creditHistoryRouter)
+app.include_router(incomeSourceRouter)
+app.include_router(billRouter)
+app.include_router(scheduleRouter)
+app.include_router(transactionRouter)

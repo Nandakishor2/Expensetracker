@@ -1,11 +1,5 @@
 from Models.Audit import AuditFields
-from Models.IncomeSource import IncomeSourceBase,IncomeSource
-
-class IncomeSourceBaseSchema(IncomeSourceBase,AuditFields):
-    pass
-
+from Models.IncomeSource import IncomeSource
 
 class IncomeSourceSchema(IncomeSource,AuditFields):
     pass
-    
-

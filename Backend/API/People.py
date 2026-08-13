@@ -28,7 +28,7 @@ async def updatePeople(personID : str,updateDetails : UpdatePeople) -> UpdatePer
     response : UpdatePersonDetailsResponse = await handleUpdatePersonDetails(personID,updateDetails)
     return JSONResponse(
         status_code= response.statusCode,
-        content=response.model_dump()
+        content=response.model_dump(mode="json")
     )
 
 @peopleRouter.delete("/{personID}")

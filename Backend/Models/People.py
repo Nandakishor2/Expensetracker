@@ -17,4 +17,4 @@ class UpdatePeople(BaseModel) :
     name : Optional[str] = Field(default=None,description="Name of the person")
     contactNumber : Optional[str] = Field(default=None,description="Contact information of the person")
     whatsappNumber : Optional[str] = Field(default=None,description="Whatsapp Number.")
-    email : Optional[EmailStr] 
+    email : Optional[EmailStr] = Field(default=None,description="Email Address")

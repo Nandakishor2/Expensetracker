@@ -9,21 +9,21 @@ accountRouter = APIRouter(prefix="/accounts",tags=["Accounts"])
 async def createAccount(accountDetails : Account):
     response : CreateAccountResponse = await handleInsertAccountDetails(accountDetails)
     return JSONResponse(
-        status_code = response.status_code,
+        status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
     )
 
 @accountRouter.patch("/update/{accountID}")
-def updateAccount(accountID : str, accountDetails : UpdateAccount):
-    response : UpdateAccountResponse = handleUpdateAccountDetails(accountID,accountDetails)
+async def updateAccount(accountID : str, accountDetails : UpdateAccount):
+    response : UpdateAccountResponse = await handleUpdateAccountDetails(accountID,accountDetails)
     return JSONResponse(
         status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
     )
 
 @accountRouter.delete("/delete/{accountID}")
-def deleteAccount(accountID : str):
-    response : DeleteAccountResponse = handleDeleteAccountDetails(accountID)
+async def deleteAccount(accountID : str):
+    response : DeleteAccountResponse = await handleDeleteAccountDetails(accountID)
     return JSONResponse(
         status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
@@ -33,6 +33,6 @@ def deleteAccount(accountID : str):
 async def getAccountDetails():
     response : GetAccountDetailsResponse = await handleGetAccountDetails()
     return JSONResponse(
-        status_code = response.status_code,
+        status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)
     )

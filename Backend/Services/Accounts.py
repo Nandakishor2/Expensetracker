@@ -12,8 +12,8 @@ async def handleInsertAccountDetails(accountDetails : Account) -> CreateAccountR
         accountID = newAccountID,
         )
 
-def handleUpdateAccountDetails(accountID : str,accountDetails : UpdateAccount) -> UpdateAccountResponse:
-    updatedAccountDetails : dict = updateAccountDetails(accountID,accountDetails)
+async def handleUpdateAccountDetails(accountID : str,accountDetails : UpdateAccount) -> UpdateAccountResponse:
+    updatedAccountDetails : dict = await updateAccountDetails(accountID,accountDetails)
 
     return UpdateAccountResponse(
         statusCode = 200,
@@ -21,8 +21,8 @@ def handleUpdateAccountDetails(accountID : str,accountDetails : UpdateAccount) -
         updatedAccountDetails = Account(**updatedAccountDetails),
     )
 
-def handleDeleteAccountDetails(accountID : str):
-    deletedAccountStaus : dict = deleteAccountDetails(accountID)
+async def handleDeleteAccountDetails(accountID : str):
+    deletedAccountStaus : dict = await deleteAccountDetails(accountID)
     return DeleteAccountResponse(
         statusCode = 200,
         message = "Account details deleted successfully."

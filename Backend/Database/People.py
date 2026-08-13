@@ -34,6 +34,7 @@ async def updatePeopleDetails(personID : str, updateDetails : UpdatePeople) -> d
         result = await mongoDB["People"].find_one_and_update({"personID" : personID} , {"$set" : data},return_document = ReturnDocument.AFTER)
         return result
     except DuplicateKeyError as e:
+        logging.exception(e)
         raise DuplicateKeyException("Person already exists.") from e
     except Exception as e:
         logging.exception(e)

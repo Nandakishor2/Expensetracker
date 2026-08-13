@@ -42,6 +42,7 @@ async def initializeConnection():
         # Ensure indexes are created asynchronously
         await mongoDB["People"].create_index(["personID"],unique = True)
         await mongoDB["Loans"].create_index(["loanID"],unique = True)
+        await mongoDB["IncomeSource"].create_index(["incomeID"],unique = True)
         print("MongoDB Connection Successful.")
 
     except ServerSelectionTimeoutError as e:

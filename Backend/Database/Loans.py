@@ -15,9 +15,9 @@ async def insertLoanDetails(loanDetails :LoanSchema ) -> str:
     try:
         mongoDB = getMongoDBConnection()
         newLoanID = await mongoDB["Loans"].insert_one(loanDetails.model_dump())
-        return str(newLoanID.inserted_id)
+        return loanDetails.loanID
 
-    except DuplicateKeyError:
+    except DuplicateKeyError as e:
         logging.exception(str(e))
         raise DuplicateKeyException(message="Loan Already Exists")
     except Exception as e:
