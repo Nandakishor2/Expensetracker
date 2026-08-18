@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import AddTransaction from "../Components/Transactions/AddTransaction"
 import { type TransactionDetails } from "../Components/Transactions/Types"
 import ListTransactions from "../Components/Transactions/ListTransactions"
 import UpdateTransaction from "../Components/Transactions/UpdateTransaction"
 import { deleteTransaction, getTransactions } from "../API/transactionsAPI"
+import { useAPIResponse } from "../Context/APIResponse"
 
 function Transactions() {
     const [txList, setTxList] = useState<TransactionDetails[]>([])
     const [selectedTx, setSelectedTx] = useState<TransactionDetails | null>(null)
+    const { showSuccess, showFailure } = useAPIResponse()
 
-    async function refreshTxTable() {
+    const refreshTxTable = useCallback(async () => {
         try {
             const responseData = await getTransactions()
-            console.log(responseData.message)
             setTxList(responseData.transactionList || [])
             setSelectedTx(null)
-        } catch {
-            console.log("Transactions could not be fetched")
+        } catch (error: any) {
+            showFailure(error.message || "Transactions could not be fetched")
             setTxList([])
         }
-    }
+    }, [showFailure])
 
-    async function handleDeleteTx(transactionID: string) {
+    const handleDeleteTx = useCallback(async (transactionID: string) => {
         try {
             const responseData = await deleteTransaction(transactionID)
-            console.log(responseData.message)
+            showSuccess(responseData.message || "Transaction deleted successfully", 3000)
             refreshTxTable()
-        } catch {
-            console.log("Transaction could not be deleted")
+        } catch (error: any) {
+            showFailure(error.message || "Transaction could not be deleted")
         }
-    }
+    }, [refreshTxTable, showSuccess, showFailure])
 
     useEffect(() => {
         refreshTxTable()
-    }, [])
+    }, [refreshTxTable])
 
     return (
         <>
@@ -63,3 +64,4 @@ function Transactions() {
 }
 
 export default Transactions
+

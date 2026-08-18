@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { PersonDetails } from "./Types"
 import PersonFormFields from "./PersonFormFields"
 import { updatePerson } from "../../API/peopleAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type PersonUpdateProps = {
     existingPersonDetails: PersonDetails
@@ -11,13 +12,23 @@ type PersonUpdateProps = {
 
 function UpdatePerson({ existingPersonDetails, refreshTableFunction }: PersonUpdateProps) {
     const [personDetails, setPersonDetails] = useState<PersonDetails>(existingPersonDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setPersonDetails(existingPersonDetails)
+    }, [existingPersonDetails])
 
     async function funcUpdatePersonDetails() {
+        setIsSubmitting(true)
         try {
-            await updatePerson(personDetails.personID, personDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update person details", error)
+            const res = await updatePerson(personDetails.personID, personDetails)
+            showSuccess(res.message || "Person updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update person details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -35,11 +46,14 @@ function UpdatePerson({ existingPersonDetails, refreshTableFunction }: PersonUpd
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setPersonDetails(existingPersonDetails)
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={funcUpdatePersonDetails} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={funcUpdatePersonDetails} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdatePerson
+

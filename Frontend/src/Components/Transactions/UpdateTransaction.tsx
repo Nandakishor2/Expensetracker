@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { TransactionDetails } from "./Types"
 import TransactionFormFields from "./TransactionFormFields"
 import { updateTransaction } from "../../API/transactionsAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type TransactionUpdateProps = {
     existingDetails: TransactionDetails
@@ -14,8 +15,18 @@ function UpdateTransaction({ existingDetails, refreshTableFunction }: Transactio
         ...existingDetails,
         transactionDate: existingDetails.transactionDate ? String(existingDetails.transactionDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setDetails({
+            ...existingDetails,
+            transactionDate: existingDetails.transactionDate ? String(existingDetails.transactionDate).split("T")[0] : ""
+        })
+    }, [existingDetails])
 
     async function handleUpdate() {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
@@ -25,10 +36,13 @@ function UpdateTransaction({ existingDetails, refreshTableFunction }: Transactio
                 billID: details.billID ? details.billID : null,
                 incomeID: details.incomeID ? details.incomeID : null
             }
-            await updateTransaction(details.transactionID, dataToSubmit)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update transaction details", error)
+            const res = await updateTransaction(details.transactionID, dataToSubmit)
+            showSuccess(res.message || "Transaction updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update transaction details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -49,11 +63,14 @@ function UpdateTransaction({ existingDetails, refreshTableFunction }: Transactio
                         ...existingDetails,
                         transactionDate: existingDetails.transactionDate ? String(existingDetails.transactionDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateTransaction
+

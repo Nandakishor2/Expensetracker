@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { CreditHistoryDetails } from "./Types"
 import CreditHistoryFormFields from "./CreditHistoryFormFields"
 import { updateCreditHistory } from "../../API/creditHistoryAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type CreditHistoryUpdateProps = {
     existingDetails: CreditHistoryDetails
@@ -16,18 +17,33 @@ function UpdateCreditHistory({ existingDetails, refreshTableFunction }: CreditHi
         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : "",
         dueClearedDate: existingDetails.dueClearedDate ? String(existingDetails.dueClearedDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setDetails({
+            ...existingDetails,
+            recievedDate: existingDetails.recievedDate ? String(existingDetails.recievedDate).split("T")[0] : "",
+            dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : "",
+            dueClearedDate: existingDetails.dueClearedDate ? String(existingDetails.dueClearedDate).split("T")[0] : ""
+        })
+    }, [existingDetails])
 
     async function handleUpdate() {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
                 dueClearedDate: details.dueCleared ? details.dueClearedDate : null,
                 repaymentMode: details.dueCleared ? details.repaymentMode : null
             }
-            await updateCreditHistory(details.creditHistoryID, dataToSubmit)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update credit history details", error)
+            const res = await updateCreditHistory(details.creditHistoryID, dataToSubmit)
+            showSuccess(res.message || "Credit History updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update credit history details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -50,11 +66,14 @@ function UpdateCreditHistory({ existingDetails, refreshTableFunction }: CreditHi
                         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : "",
                         dueClearedDate: existingDetails.dueClearedDate ? String(existingDetails.dueClearedDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateCreditHistory
+

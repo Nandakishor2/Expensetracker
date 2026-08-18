@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { IncomeSourceDetails } from "./Types"
 import IncomeSourceFormFields from "./IncomeSourceFormFields"
 import { updateIncomeSource } from "../../API/incomeSourceAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type IncomeSourceUpdateProps = {
     existingDetails: IncomeSourceDetails
@@ -16,18 +17,33 @@ function UpdateIncomeSource({ existingDetails, refreshTableFunction }: IncomeSou
         startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
         endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setDetails({
+            ...existingDetails,
+            creditedDate: existingDetails.creditedDate ? String(existingDetails.creditedDate).split("T")[0] : "",
+            startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
+            endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
+        })
+    }, [existingDetails])
 
     async function handleUpdate() {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
                 amount: Number(details.amount),
                 endDate: details.endDate ? details.endDate : null
             }
-            await updateIncomeSource(details.incomeID, dataToSubmit)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update income source details", error)
+            const res = await updateIncomeSource(details.incomeID, dataToSubmit)
+            showSuccess(res.message || "Income source updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update income source details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -50,11 +66,14 @@ function UpdateIncomeSource({ existingDetails, refreshTableFunction }: IncomeSou
                         startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
                         endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateIncomeSource
+

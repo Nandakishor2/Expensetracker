@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { ScheduleDetails } from "./Types"
 import ScheduleFormFields from "./ScheduleFormFields"
 import { updateSchedule } from "../../API/schedulesAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type ScheduleUpdateProps = {
     existingDetails: ScheduleDetails
@@ -14,8 +15,18 @@ function UpdateSchedule({ existingDetails, refreshTableFunction }: ScheduleUpdat
         ...existingDetails,
         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setDetails({
+            ...existingDetails,
+            dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
+        })
+    }, [existingDetails])
 
     async function handleUpdate() {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
@@ -24,10 +35,13 @@ function UpdateSchedule({ existingDetails, refreshTableFunction }: ScheduleUpdat
                 billID: details.billID ? details.billID : null,
                 incomeID: details.incomeID ? details.incomeID : null
             }
-            await updateSchedule(details.scheduleID, dataToSubmit)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update schedule details", error)
+            const res = await updateSchedule(details.scheduleID, dataToSubmit)
+            showSuccess(res.message || "Schedule updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update schedule details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -48,11 +62,14 @@ function UpdateSchedule({ existingDetails, refreshTableFunction }: ScheduleUpdat
                         ...existingDetails,
                         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateSchedule
+

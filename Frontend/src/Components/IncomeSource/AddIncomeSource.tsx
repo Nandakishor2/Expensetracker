@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreateIncomeSource } from "./Types"
 import IncomeSourceFormFields from "./IncomeSourceFormFields"
 import { createIncomeSource } from "../../API/incomeSourceAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddIncomeSourceProps = {
     refreshTableFunction: () => Promise<any>
@@ -20,19 +21,25 @@ function AddIncomeSource({ refreshTableFunction }: AddIncomeSourceProps) {
     }
 
     const [details, setDetails] = useState<CreateIncomeSource>(defaultDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreate = async () => {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
                 amount: Number(details.amount),
                 endDate: details.endDate ? details.endDate : null
             }
-            await createIncomeSource(dataToSubmit)
+            const res = await createIncomeSource(dataToSubmit)
+            showSuccess(res.message || "Income source added successfully", 3000)
             setDetails(defaultDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create income source", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create income source")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -50,11 +57,14 @@ function AddIncomeSource({ refreshTableFunction }: AddIncomeSourceProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails(defaultDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddIncomeSource
+

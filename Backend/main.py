@@ -31,7 +31,7 @@ app.add_exception_handler(ExpenseTrackerException , expenseExceptionHandler)
 app.add_exception_handler(Exception , genericExceptionHandler)
 
 orgins = [
-    "http://localhost:5174"
+    "http://localhost:5173"
 ]
 
 

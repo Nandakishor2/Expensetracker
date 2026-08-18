@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { AccountDetails } from "./Types"
 import AccountFormFields from "./AccountFormFields"
 import { updateAccountDetails } from "../../API/accountAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AccountUpdateProps = {
     existingAccountDetails: AccountDetails,
@@ -18,16 +19,24 @@ function UpdateAccount({ existingAccountDetails, refreshTableFunction }: Account
         closingBalance: 0.0
     }
     const [accountDetails, setAccountDetails] = useState<AccountDetails>(existingAccountDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setAccountDetails(existingAccountDetails)
+    }, [existingAccountDetails])
 
     async function funcUpdateAccountDetails() {
+        setIsSubmitting(true)
         try {
-
-            await updateAccountDetails(accountDetails)
-            refreshTableFunction()
-
+            const res = await updateAccountDetails(accountDetails)
+            showSuccess(res.message || "Account updated successfully", 3000)
+            await refreshTableFunction()
         }
-        catch (error) {
-            console.error(error)
+        catch (error: any) {
+            showFailure(error.message || "Failed to update account")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -44,13 +53,15 @@ function UpdateAccount({ existingAccountDetails, refreshTableFunction }: Account
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setAccountDetails(defaultAccountDetails)
-                }} className="text-sm">Clear</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
                 <Button type="button" variant="primary" onClick={() => {
                     funcUpdateAccountDetails()
-                }} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
-export default UpdateAccount
+export default UpdateAccount

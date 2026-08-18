@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import AddSchedule from "../Components/Schedules/AddSchedule"
 import { type ScheduleDetails } from "../Components/Schedules/Types"
 import ListSchedules from "../Components/Schedules/ListSchedules"
 import UpdateSchedule from "../Components/Schedules/UpdateSchedule"
 import { deleteSchedule, getSchedules } from "../API/schedulesAPI"
+import { useAPIResponse } from "../Context/APIResponse"
 
 function Schedules() {
     const [scheduleList, setScheduleList] = useState<ScheduleDetails[]>([])
     const [selectedSchedule, setSelectedSchedule] = useState<ScheduleDetails | null>(null)
+    const { showSuccess, showFailure } = useAPIResponse()
 
-    async function refreshSchedulesTable() {
+    const refreshSchedulesTable = useCallback(async () => {
         try {
             const responseData = await getSchedules()
-            console.log(responseData.message)
             setScheduleList(responseData.scheduleList || [])
             setSelectedSchedule(null)
-        } catch {
-            console.log("Schedules could not be fetched")
+        } catch (error: any) {
+            showFailure(error.message || "Schedules could not be fetched")
             setScheduleList([])
         }
-    }
+    }, [showFailure])
 
-    async function handleDeleteSchedule(scheduleID: string) {
+    const handleDeleteSchedule = useCallback(async (scheduleID: string) => {
         try {
             const responseData = await deleteSchedule(scheduleID)
-            console.log(responseData.message)
+            showSuccess(responseData.message || "Schedule deleted successfully", 3000)
             refreshSchedulesTable()
-        } catch {
-            console.log("Schedule could not be deleted")
+        } catch (error: any) {
+            showFailure(error.message || "Schedule could not be deleted")
         }
-    }
+    }, [refreshSchedulesTable, showSuccess, showFailure])
 
     useEffect(() => {
         refreshSchedulesTable()
-    }, [])
+    }, [refreshSchedulesTable])
 
     return (
         <>
@@ -63,3 +64,4 @@ function Schedules() {
 }
 
 export default Schedules
+

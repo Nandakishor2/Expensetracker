@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreatePerson } from "./Types"
 import PersonFormFields from "./PersonFormFields"
 import { createPerson } from "../../API/peopleAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddPersonProps = {
     refreshTableFunction: () => Promise<any>
@@ -17,14 +18,20 @@ function AddPerson({ refreshTableFunction }: AddPersonProps) {
     }
 
     const [personDetails, setPersonDetails] = useState<CreatePerson>(defaultPersonDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreatePerson = async () => {
+        setIsSubmitting(true)
         try {
-            await createPerson(personDetails)
+            const res = await createPerson(personDetails)
+            showSuccess(res.message || "Person added successfully", 3000)
             setPersonDetails(defaultPersonDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create person", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create person")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -42,11 +49,14 @@ function AddPerson({ refreshTableFunction }: AddPersonProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setPersonDetails(defaultPersonDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreatePerson} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreatePerson} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddPerson
+

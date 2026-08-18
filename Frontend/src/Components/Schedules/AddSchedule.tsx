@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreateSchedule } from "./Types"
 import ScheduleFormFields from "./ScheduleFormFields"
 import { createSchedule } from "../../API/schedulesAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddScheduleProps = {
     refreshTableFunction: () => Promise<any>
@@ -22,8 +23,11 @@ function AddSchedule({ refreshTableFunction }: AddScheduleProps) {
     }
 
     const [details, setDetails] = useState<CreateSchedule>(defaultDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreate = async () => {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
@@ -32,11 +36,14 @@ function AddSchedule({ refreshTableFunction }: AddScheduleProps) {
                 billID: details.billID ? details.billID : null,
                 incomeID: details.incomeID ? details.incomeID : null
             }
-            await createSchedule(dataToSubmit)
+            const res = await createSchedule(dataToSubmit)
+            showSuccess(res.message || "Schedule added successfully", 3000)
             setDetails(defaultDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create schedule", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create schedule")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -54,11 +61,14 @@ function AddSchedule({ refreshTableFunction }: AddScheduleProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails(defaultDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddSchedule
+

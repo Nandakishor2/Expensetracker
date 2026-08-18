@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreateCreditHistory } from "./Types"
 import CreditHistoryFormFields from "./CreditHistoryFormFields"
 import { createCreditHistory } from "../../API/creditHistoryAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddCreditHistoryProps = {
     refreshTableFunction: () => Promise<any>
@@ -21,19 +22,25 @@ function AddCreditHistory({ refreshTableFunction }: AddCreditHistoryProps) {
     }
 
     const [details, setDetails] = useState<CreateCreditHistory>(defaultDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreate = async () => {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
                 dueClearedDate: details.dueCleared ? details.dueClearedDate : null,
                 repaymentMode: details.dueCleared ? details.repaymentMode : null
             }
-            await createCreditHistory(dataToSubmit)
+            const res = await createCreditHistory(dataToSubmit)
+            showSuccess(res.message || "Credit History added successfully", 3000)
             setDetails(defaultDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create credit history", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create credit history")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -51,11 +58,14 @@ function AddCreditHistory({ refreshTableFunction }: AddCreditHistoryProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails(defaultDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddCreditHistory
+

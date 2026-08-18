@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { loanDetails } from "./Types"
 import LoanFormFields from "./LoanFormFields"
 import { updateLoanDetails } from "../../API/LoansAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type LoanUpdateProps = {
     existingLoanDetails: loanDetails
@@ -16,8 +17,19 @@ function UpdateLoan({ existingLoanDetails, refreshTableFunction }: LoanUpdatePro
         startDate: existingLoanDetails.startDate ? String(existingLoanDetails.startDate).split("T")[0] : "",
         endDate: existingLoanDetails.endDate ? String(existingLoanDetails.endDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setLoanDetails({
+            ...existingLoanDetails,
+            startDate: existingLoanDetails.startDate ? String(existingLoanDetails.startDate).split("T")[0] : "",
+            endDate: existingLoanDetails.endDate ? String(existingLoanDetails.endDate).split("T")[0] : ""
+        })
+    }, [existingLoanDetails])
 
     async function funcUpdateLoanDetails() {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...loanDetails,
@@ -27,10 +39,13 @@ function UpdateLoan({ existingLoanDetails, refreshTableFunction }: LoanUpdatePro
                 emiAmount: Number(loanDetails.emiAmount),
                 endDate: loanDetails.endDate ? loanDetails.endDate : null
             }
-            await updateLoanDetails(loanDetails.loanID, dataToSubmit)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update loan details", error)
+            const res = await updateLoanDetails(loanDetails.loanID, dataToSubmit)
+            showSuccess(res.message || "Loan updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update loan details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -53,11 +68,14 @@ function UpdateLoan({ existingLoanDetails, refreshTableFunction }: LoanUpdatePro
                         startDate: existingLoanDetails.startDate ? String(existingLoanDetails.startDate).split("T")[0] : "",
                         endDate: existingLoanDetails.endDate ? String(existingLoanDetails.endDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={funcUpdateLoanDetails} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={funcUpdateLoanDetails} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateLoan
+

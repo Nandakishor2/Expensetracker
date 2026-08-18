@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreateTransaction } from "./Types"
 import TransactionFormFields from "./TransactionFormFields"
 import { createTransaction } from "../../API/transactionsAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddTransactionProps = {
     refreshTableFunction: () => Promise<any>
@@ -22,8 +23,11 @@ function AddTransaction({ refreshTableFunction }: AddTransactionProps) {
     }
 
     const [details, setDetails] = useState<CreateTransaction>(defaultDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreate = async () => {
+        setIsSubmitting(true)
         try {
             const dataToSubmit = {
                 ...details,
@@ -33,11 +37,14 @@ function AddTransaction({ refreshTableFunction }: AddTransactionProps) {
                 billID: details.billID ? details.billID : null,
                 incomeID: details.incomeID ? details.incomeID : null
             }
-            await createTransaction(dataToSubmit)
+            const res = await createTransaction(dataToSubmit)
+            showSuccess(res.message || "Transaction added successfully", 3000)
             setDetails(defaultDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create transaction", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create transaction")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -55,11 +62,14 @@ function AddTransaction({ refreshTableFunction }: AddTransactionProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails(defaultDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddTransaction
+

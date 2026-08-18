@@ -1,9 +1,15 @@
 import MainActivity from "./Layouts/MainActivity"
-function App() {
+import { APIResponseProvider } from "./Context/APIResponse"
+import Status from "./Pages/Status"
 
+function App() {
   return (
-    <MainActivity />
+    <APIResponseProvider>
+      <MainActivity />
+      <Status />
+    </APIResponseProvider>
   )
 }
 
 export default App
+

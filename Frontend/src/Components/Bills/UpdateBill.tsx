@@ -1,8 +1,9 @@
 import Button from "../UI/Button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { BillDetails } from "./Types"
 import BillFormFields from "./BillFormFields"
 import { updateBill } from "../../API/billsAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type BillUpdateProps = {
     existingDetails: BillDetails
@@ -14,13 +15,26 @@ function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) 
         ...existingDetails,
         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
     })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
+
+    useEffect(() => {
+        setDetails({
+            ...existingDetails,
+            dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
+        })
+    }, [existingDetails])
 
     async function handleUpdate() {
+        setIsSubmitting(true)
         try {
-            await updateBill(details.billID, details)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to update bill details", error)
+            const res = await updateBill(details.billID, details)
+            showSuccess(res.message || "Bill updated successfully", 3000)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to update bill details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -41,11 +55,14 @@ function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) 
                         ...existingDetails,
                         dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
                     })
-                }} className="text-sm">Reset</Button>
-                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm">Update</Button>
+                }} className="text-sm" disabled={isSubmitting}>Reset</Button>
+                <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Updating..." : "Update"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default UpdateBill
+

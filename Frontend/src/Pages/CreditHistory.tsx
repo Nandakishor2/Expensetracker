@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import AddCreditHistory from "../Components/CreditHistory/AddCreditHistory"
 import { type CreditHistoryDetails } from "../Components/CreditHistory/Types"
 import ListCreditHistory from "../Components/CreditHistory/ListCreditHistory"
@@ -6,13 +6,15 @@ import UpdateCreditHistory from "../Components/CreditHistory/UpdateCreditHistory
 import { deleteCreditHistory, getCreditHistory } from "../API/creditHistoryAPI"
 import { getPeople } from "../API/peopleAPI"
 import type { PersonDetails } from "../Components/People/Types"
+import { useAPIResponse } from "../Context/APIResponse"
 
 function CreditHistory() {
     const [historyList, setHistoryList] = useState<CreditHistoryDetails[]>([])
     const [selectedDetails, setSelectedDetails] = useState<CreditHistoryDetails | null>(null)
     const [lenderMap, setLenderMap] = useState<Record<string, string>>({})
+    const { showSuccess, showFailure } = useAPIResponse()
 
-    async function fetchLenders() {
+    const fetchLenders = useCallback(async () => {
         try {
             const data = await getPeople()
             const mapping: Record<string, string> = {}
@@ -22,35 +24,36 @@ function CreditHistory() {
                 })
             }
             setLenderMap(mapping)
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to fetch lenders mapping", err)
         }
-    }
+    }, [])
 
-    async function refreshHistoryTable() {
+    const refreshHistoryTable = useCallback(async () => {
         try {
             await fetchLenders()
             const responseData = await getCreditHistory()
             setHistoryList(responseData.creditHistoryList || [])
             setSelectedDetails(null)
-        } catch {
-            console.log("Credit History could not be fetched")
+        } catch (error: any) {
+            showFailure(error.message || "Credit History could not be fetched")
             setHistoryList([])
         }
-    }
+    }, [fetchLenders, showFailure])
 
-    async function handleDelete(creditHistoryID: string) {
+    const handleDelete = useCallback(async (creditHistoryID: string) => {
         try {
-            await deleteCreditHistory(creditHistoryID)
+            const res = await deleteCreditHistory(creditHistoryID)
+            showSuccess(res.message || "Credit History deleted successfully", 3000)
             refreshHistoryTable()
-        } catch {
-            console.log("Credit History could not be deleted")
+        } catch (error: any) {
+            showFailure(error.message || "Credit History could not be deleted")
         }
-    }
+    }, [refreshHistoryTable, showSuccess, showFailure])
 
     useEffect(() => {
         refreshHistoryTable()
-    }, [])
+    }, [refreshHistoryTable])
 
     return (
         <>
@@ -81,3 +84,4 @@ function CreditHistory() {
 }
 
 export default CreditHistory
+

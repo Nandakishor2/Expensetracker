@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import AddBill from "../Components/Bills/AddBill"
 import { type BillDetails } from "../Components/Bills/Types"
 import ListBills from "../Components/Bills/ListBills"
 import UpdateBill from "../Components/Bills/UpdateBill"
 import { deleteBill, getBills } from "../API/billsAPI"
+import { useAPIResponse } from "../Context/APIResponse"
 
 function Bills() {
     const [billList, setBillList] = useState<BillDetails[]>([])
     const [selectedBill, setSelectedBill] = useState<BillDetails | null>(null)
+    const { showSuccess, showFailure } = useAPIResponse()
 
-    async function refreshBillsTable() {
+    const refreshBillsTable = useCallback(async () => {
         try {
             const responseData = await getBills()
-            console.log(responseData.message)
             setBillList(responseData.billList || [])
             setSelectedBill(null)
-        } catch {
-            console.log("Bills could not be fetched")
+        } catch (error: any) {
+            showFailure(error.message || "Bills could not be fetched")
             setBillList([])
         }
-    }
+    }, [showFailure])
 
-    async function handleDeleteBill(billID: string) {
+    const handleDeleteBill = useCallback(async (billID: string) => {
         try {
             const responseData = await deleteBill(billID)
-            console.log(responseData.message)
+            showSuccess(responseData.message || "Bill deleted successfully", 3000)
             refreshBillsTable()
-        } catch {
-            console.log("Bill could not be deleted")
+        } catch (error: any) {
+            showFailure(error.message || "Bill could not be deleted")
         }
-    }
+    }, [refreshBillsTable, showSuccess, showFailure])
 
     useEffect(() => {
         refreshBillsTable()
-    }, [])
+    }, [refreshBillsTable])
 
     return (
         <>
@@ -63,3 +64,4 @@ function Bills() {
 }
 
 export default Bills
+

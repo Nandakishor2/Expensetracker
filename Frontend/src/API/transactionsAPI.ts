@@ -1,27 +1,30 @@
 import axiosClient from "./axiosClient";
-import type { CreateTransaction, UpdateTransaction } from "../Components/Transactions/Types";
+import type { 
+    CreateTransaction, 
+    UpdateTransaction, 
+    GetTransactionResponse, 
+    CreateTransactionResponse, 
+    UpdateTransactionResponse, 
+    DeleteTransactionResponse 
+} from "../Components/Transactions/Types";
 
-export async function getTransactions() {
-    const response = await axiosClient.get("/Transactions/");
-    return response.data;
+export async function getTransactions(): Promise<GetTransactionResponse> {
+    return axiosClient.get("/Transactions/");
 }
 
-export async function getTransactionDetails(transactionID: string) {
-    const response = await axiosClient.get(`/Transactions/${transactionID}`);
-    return response.data;
+export async function getTransactionDetails(transactionID: string): Promise<GetTransactionResponse> {
+    return axiosClient.get(`/Transactions/${transactionID}`);
 }
 
-export async function createTransaction(transaction: CreateTransaction) {
-    const response = await axiosClient.post("/Transactions/", transaction);
-    return response.data;
+export async function createTransaction(transaction: CreateTransaction): Promise<CreateTransactionResponse> {
+    return axiosClient.post("/Transactions/", transaction);
 }
 
-export async function updateTransaction(transactionID: string, transaction: UpdateTransaction) {
-    const response = await axiosClient.put(`/Transactions/${transactionID}`, transaction);
-    return response.data;
+export async function updateTransaction(transactionID: string, transaction: UpdateTransaction): Promise<UpdateTransactionResponse> {
+    return axiosClient.put(`/Transactions/${transactionID}`, transaction);
 }
 
-export async function deleteTransaction(transactionID: string) {
-    const response = await axiosClient.delete(`/Transactions/${transactionID}`);
-    return response.data;
+export async function deleteTransaction(transactionID: string): Promise<DeleteTransactionResponse> {
+    return axiosClient.delete(`/Transactions/${transactionID}`);
 }
+

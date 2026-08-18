@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import AddPerson from "../Components/People/AddPerson"
 import { type PersonDetails } from "../Components/People/Types"
 import ListPeople from "../Components/People/ListPeople"
 import UpdatePerson from "../Components/People/UpdatePerson"
 import { deletePerson, getPeople } from "../API/peopleAPI"
+import { useAPIResponse } from "../Context/APIResponse"
 
 function People() {
     const [peopleList, setPeopleList] = useState<PersonDetails[]>([])
     const [selectedPerson, setSelectedPerson] = useState<PersonDetails | null>(null)
+    const { showSuccess, showFailure } = useAPIResponse()
 
-    async function refreshPeopleTable() {
+    const refreshPeopleTable = useCallback(async () => {
         try {
             const responseData = await getPeople()
-            console.log(responseData.message)
             setPeopleList(responseData.peopleList || [])
             setSelectedPerson(null)
-        } catch {
-            console.log("People Details could not be fetched")
+        } catch (error: any) {
+            showFailure(error.message || "People Details could not be fetched")
             setPeopleList([])
         }
-    }
+    }, [showFailure])
 
-    async function handleDeletePerson(personID: string) {
+    const handleDeletePerson = useCallback(async (personID: string) => {
         try {
             const responseData = await deletePerson(personID)
-            console.log(responseData.message)
+            showSuccess(responseData.message || "Person deleted successfully", 3000)
             refreshPeopleTable()
-        } catch {
-            console.log("Person could not be deleted")
+        } catch (error: any) {
+            showFailure(error.message || "Person could not be deleted")
         }
-    }
+    }, [refreshPeopleTable, showSuccess, showFailure])
 
     useEffect(() => {
         refreshPeopleTable()
-    }, [])
+    }, [refreshPeopleTable])
 
     return (
         <>
@@ -63,3 +64,4 @@ function People() {
 }
 
 export default People
+

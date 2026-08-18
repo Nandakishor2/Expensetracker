@@ -3,6 +3,7 @@ import { useState } from "react"
 import type { CreateBills } from "./Types"
 import BillFormFields from "./BillFormFields"
 import { createBill } from "../../API/billsAPI"
+import { useAPIResponse } from "../../Context/APIResponse"
 
 type AddBillProps = {
     refreshTableFunction: () => Promise<any>
@@ -16,14 +17,20 @@ function AddBill({ refreshTableFunction }: AddBillProps) {
     }
 
     const [details, setDetails] = useState<CreateBills>(defaultDetails)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { showSuccess, showFailure } = useAPIResponse()
 
     const handleCreate = async () => {
+        setIsSubmitting(true)
         try {
-            await createBill(details)
+            const res = await createBill(details)
+            showSuccess(res.message || "Bill added successfully", 3000)
             setDetails(defaultDetails)
-            refreshTableFunction()
-        } catch (error) {
-            console.error("Failed to create bill", error)
+            await refreshTableFunction()
+        } catch (error: any) {
+            showFailure(error.message || "Failed to create bill")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -41,11 +48,14 @@ function AddBill({ refreshTableFunction }: AddBillProps) {
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails(defaultDetails)
-                }} className="text-sm">Clear</Button>
-                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm">Add</Button>
+                }} className="text-sm" disabled={isSubmitting}>Clear</Button>
+                <Button type="button" variant="primary" onClick={handleCreate} className="text-sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add"}
+                </Button>
             </div>
         </div>
     )
 }
 
 export default AddBill
+
