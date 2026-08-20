@@ -12,12 +12,10 @@ type AddIncomeSourceProps = {
 function AddIncomeSource({ refreshTableFunction }: AddIncomeSourceProps) {
     const defaultDetails: CreateIncomeSource = {
         sourceName: "",
-        creditedDate: new Date().toISOString().split("T")[0],
+        creditedDate: 1,
         amount: 0,
         accountID: "",
-        incomeSourceStatus: true,
-        startDate: new Date().toISOString().split("T")[0],
-        endDate: ""
+        incomeSourceStatus: true
     }
 
     const [details, setDetails] = useState<CreateIncomeSource>(defaultDetails)
@@ -29,8 +27,8 @@ function AddIncomeSource({ refreshTableFunction }: AddIncomeSourceProps) {
         try {
             const dataToSubmit = {
                 ...details,
-                amount: Number(details.amount),
-                endDate: details.endDate ? details.endDate : null
+                creditedDate: Number(details.creditedDate),
+                amount: Number(details.amount)
             }
             const res = await createIncomeSource(dataToSubmit)
             showSuccess(res.message || "Income source added successfully", 3000)

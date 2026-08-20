@@ -13,23 +13,28 @@ class Account(BaseModel):
     '''
     accountID : str = Field(
         ...,
-        description="Account Identifier"
+        description="Account Identifier",
+        min_length=1
     )
     ifscCode : str = Field(
         ...,
-        description="IFSC Code"
+        description="IFSC Code",
+        min_length=1
     )
     accountType : str = Field(
         ...,
-        description="Account Type"
+        description="Account Type",
+        min_length=1
     )
     bankName : str = Field(
         ...,
-        description="Name of the Bank where the account is"
+        description="Name of the Bank where the account is",
+        min_length=1
     )
-    closingBalance : int = Field(
+    closingBalance : float = Field(
         ...,
-        description="Actual balance when this record was created"
+        description="Actual balance when this record was created",
+        ge=0
     )
 
 class UpdateAccount(BaseModel):
@@ -45,7 +50,8 @@ class UpdateAccount(BaseModel):
         None,
         description="Name of the Bank where the account is"
     )
-    closingBalance : Optional[int] = Field(
+    closingBalance : Optional[float] = Field(
         None,
         description="Actual balance when this record was created"
     )
+    

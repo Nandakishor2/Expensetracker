@@ -1,12 +1,10 @@
 type IncomeSourceDetails = {
     incomeID: string
     sourceName: string
-    creditedDate: string | Date
+    creditedDate: number
     amount: number
     accountID: string
     incomeSourceStatus: boolean
-    startDate: string | Date
-    endDate?: string | Date | null
 }
 
 type CreateIncomeSource = Omit<IncomeSourceDetails, "incomeID">

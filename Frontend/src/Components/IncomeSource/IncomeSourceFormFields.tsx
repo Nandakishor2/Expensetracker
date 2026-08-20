@@ -48,8 +48,9 @@ function IncomeSourceFormFields({ incomeSourceDetails, onChange }: IncomeSourceF
                     id="txtCreditedDate"
                     name="creditedDate"
                     labelName="CREDITED DATE OF MONTH"
-                    value={incomeSourceDetails.creditedDate ? String(incomeSourceDetails.creditedDate).split("T")[0] : ""}
-                    type="date"
+                    value={incomeSourceDetails.creditedDate !== undefined && incomeSourceDetails.creditedDate !== null ? String(incomeSourceDetails.creditedDate) : ""}
+                    placeholder="E.g. 1 - 31"
+                    type="number"
                     onChange={onChange}
                 />
             </div>
@@ -58,7 +59,7 @@ function IncomeSourceFormFields({ incomeSourceDetails, onChange }: IncomeSourceF
                     id="txtAmount"
                     name="amount"
                     labelName="AMOUNT"
-                    value={String(incomeSourceDetails.amount || "")}
+                    value={String(incomeSourceDetails.amount ?? "")}
                     placeholder="Provide income amount"
                     type="number"
                     onChange={onChange}
@@ -96,29 +97,7 @@ function IncomeSourceFormFields({ incomeSourceDetails, onChange }: IncomeSourceF
                     }}
                 />
             </div>
-            <div className="sm:col-span-4">
-                <TextGroup 
-                    id="txtStartDate"
-                    name="startDate"
-                    labelName="START DATE"
-                    value={incomeSourceDetails.startDate ? String(incomeSourceDetails.startDate).split("T")[0] : ""}
-                    type="date"
-                    onChange={onChange}
-                />
-            </div>
-
-            {/* Row 3 */}
-            <div className="sm:col-span-4">
-                <TextGroup 
-                    id="txtEndDate"
-                    name="endDate"
-                    labelName="END DATE"
-                    value={incomeSourceDetails.endDate ? String(incomeSourceDetails.endDate).split("T")[0] : ""}
-                    type="date"
-                    onChange={onChange}
-                />
-            </div>
-            <div className="sm:col-span-8"></div>
+            <div className="sm:col-span-4"></div>
         </>
     )
 }

@@ -8,11 +8,10 @@ import uuid
 async def createIncomeSource(client) -> str:
     payload = {
         "sourceName": f"Salary {uuid.uuid4().hex[:4]}",
-        "creditedDate": "2026-07-31T00:00:00Z",
+        "creditedDate": 25,
         "amount": 7500.0,
         "accountID": f"ACC-{uuid.uuid4().hex[:8]}",
-        "incomeSourceStatus": True,
-        "startDate": "2026-07-01T00:00:00Z"
+        "incomeSourceStatus": True
     }
     response = await client.post("/IncomeSource/", json=payload)
     assert response.status_code == 200

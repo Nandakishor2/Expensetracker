@@ -20,8 +20,6 @@ function ListIncomeSources({ incomeSourceList, onEditIncomeSource, onDeleteIncom
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Amount</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Bank Account ID</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Status</Text></th>
-                        <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Start Date</Text></th>
-                        <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">End Date</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Actions</Text></th>
                     </tr>
                 </thead>
@@ -34,7 +32,7 @@ function ListIncomeSources({ incomeSourceList, onEditIncomeSource, onDeleteIncom
                                         <Text color="primary" size="label">{row.sourceName}</Text>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-left">
-                                        <Text color="primary" size="label">{row.creditedDate ? new Date(row.creditedDate).toISOString().split("T")[0] : ""}</Text>
+                                        <Text color="primary" size="label">{row.creditedDate}</Text>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-left">
                                         <Text color="primary" size="label">{row.amount}</Text>
@@ -46,12 +44,6 @@ function ListIncomeSources({ incomeSourceList, onEditIncomeSource, onDeleteIncom
                                         <Text color={row.incomeSourceStatus ? "primary" : "danger"} size="label">
                                             {row.incomeSourceStatus ? "Active" : "Inactive"}
                                         </Text>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-left">
-                                        <Text color="primary" size="label">{row.startDate ? new Date(row.startDate).toISOString().split("T")[0] : ""}</Text>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-left">
-                                        <Text color="primary" size="label">{row.endDate ? new Date(row.endDate).toISOString().split("T")[0] : "-"}</Text>
                                     </td>
                                     <td className="flex gap-4 pt-4 pb-4">
                                         <button
@@ -75,7 +67,7 @@ function ListIncomeSources({ incomeSourceList, onEditIncomeSource, onDeleteIncom
                             ))
                         ) : (
                             <tr className="text-center">
-                                <td colSpan={8} className="pt-16 pb-16 text-center">
+                                <td colSpan={6} className="pt-16 pb-16 text-center">
                                     <Text color="danger" size="heading">
                                         <h1>There are no income sources to display</h1>
                                     </Text>

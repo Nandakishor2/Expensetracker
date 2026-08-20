@@ -12,20 +12,14 @@ type IncomeSourceUpdateProps = {
 
 function UpdateIncomeSource({ existingDetails, refreshTableFunction }: IncomeSourceUpdateProps) {
     const [details, setDetails] = useState<IncomeSourceDetails>({
-        ...existingDetails,
-        creditedDate: existingDetails.creditedDate ? String(existingDetails.creditedDate).split("T")[0] : "",
-        startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
-        endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
+        ...existingDetails
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { showSuccess, showFailure } = useAPIResponse()
 
     useEffect(() => {
         setDetails({
-            ...existingDetails,
-            creditedDate: existingDetails.creditedDate ? String(existingDetails.creditedDate).split("T")[0] : "",
-            startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
-            endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
+            ...existingDetails
         })
     }, [existingDetails])
 
@@ -34,8 +28,8 @@ function UpdateIncomeSource({ existingDetails, refreshTableFunction }: IncomeSou
         try {
             const dataToSubmit = {
                 ...details,
-                amount: Number(details.amount),
-                endDate: details.endDate ? details.endDate : null
+                creditedDate: Number(details.creditedDate),
+                amount: Number(details.amount)
             }
             const res = await updateIncomeSource(details.incomeID, dataToSubmit)
             showSuccess(res.message || "Income source updated successfully", 3000)
@@ -61,10 +55,7 @@ function UpdateIncomeSource({ existingDetails, refreshTableFunction }: IncomeSou
             <div className="sm:col-span-3 flex gap-2 justify-end-safe">
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails({
-                        ...existingDetails,
-                        creditedDate: existingDetails.creditedDate ? String(existingDetails.creditedDate).split("T")[0] : "",
-                        startDate: existingDetails.startDate ? String(existingDetails.startDate).split("T")[0] : "",
-                        endDate: existingDetails.endDate ? String(existingDetails.endDate).split("T")[0] : ""
+                        ...existingDetails
                     })
                 }} className="text-sm" disabled={isSubmitting}>Reset</Button>
                 <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>

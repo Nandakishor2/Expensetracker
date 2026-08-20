@@ -1,16 +1,13 @@
 
 from pydantic import Field,BaseModel
 from typing import Optional
-from datetime import datetime
 
 class IncomeSourceBase(BaseModel):
     sourceName : str = Field(..., description="Name for the source", index=True)
-    creditedDate : datetime = Field(..., description="The date when the money will be credited")
+    creditedDate : int = Field(..., description="The date when the money will be credited")
     amount : float = Field(..., description="Amount that will be credited")
     accountID : str = Field(..., description="Bank Account ID where the money be credited")
     incomeSourceStatus : bool = Field(..., description="Indicate weather the income is still valid")
-    startDate : datetime = Field(..., description="Income source start date")
-    endDate : Optional[datetime] = Field(None, description="Income source end date")
     
 
 class IncomeSource(IncomeSourceBase):
@@ -21,9 +18,7 @@ class CreateIncomeSource(IncomeSourceBase):
 
 class UpdateIncomeSource(BaseModel):
     sourceName : Optional[str] = Field(None, description="Name for the source")
-    creditedDate : Optional[datetime] = Field(None, description="The date when the money will be credited")
+    creditedDate : Optional[int] = Field(None, description="The date when the money will be credited")
     amount : Optional[float] = Field(None, description="Amount that will be credited")
     accountID : Optional[str] = Field(None, description="Bank Account ID where the money be credited")
     incomeSourceStatus : Optional[bool] = Field(None, description="Indicate weather the income is still valid")
-    startDate : Optional[datetime] = Field(None, description="Income source start date")
-    endDate : Optional[datetime] = Field(None, description="Income source end date")
