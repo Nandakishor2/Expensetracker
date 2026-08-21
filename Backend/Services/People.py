@@ -1,10 +1,12 @@
 from Database.People import getPeopleList,insertPeople,updatePeopleDetails,deletePersonDetails
 from Responses.People import GetPeopleDetailsResponse,CreatePersonDetailsResponse,UpdatePersonDetailsResponse,DeletePersonDetailsResponse
-from Models.People import People,UpdatePeople
+from Models.People import People,UpdatePeople, PeopleFilter
 from Utils.GenerateUUID import generateUUID
 from Schema.People import PeopleSchema
-async def handleGetPeopleDetails() -> GetPeopleDetailsResponse:
-    peopleList : list[dict] = await getPeopleList({})
+from typing import Optional
+
+async def handleGetPeopleDetails(filters: Optional[PeopleFilter] = None) -> GetPeopleDetailsResponse:
+    peopleList : list[dict] = await getPeopleList(filters)
     return GetPeopleDetailsResponse(
         message="Get People Details Success",
         peopleList=[People(**people)  for people in peopleList] 

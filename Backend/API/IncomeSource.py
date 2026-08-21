@@ -1,17 +1,15 @@
 from Responses.IncomeSource import CreateIncomeSourceResponse,GetIncomeSourceResponse,UpdateIncomeSourceResponse,DeleteIncomeSourceResponse
-
 from Services.IncomeSource import handleCreateIncomeSource,handleDeleteIncomeSource,handleGetIncomeSource,handleGetIncomeSourceList,handleUpdateIncomeSource
-
-from Models.IncomeSource import CreateIncomeSource,UpdateIncomeSource
-
+from Models.IncomeSource import CreateIncomeSource,UpdateIncomeSource, IncomeSourceFilter
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi import Depends
 
 incomeSourceRouter = APIRouter(prefix="/IncomeSource",tags=["Income Sources"])
 
 @incomeSourceRouter.get("/")
-async def getIncomeSourceList():
-    response : GetIncomeSourceResponse = await handleGetIncomeSourceList()
+async def getIncomeSourceList(filters: IncomeSourceFilter = Depends()):
+    response : GetIncomeSourceResponse = await handleGetIncomeSourceList(filters)
     return JSONResponse(
         status_code=response.statusCode,
         content=response.model_dump(exclude_defaults=True,exclude_none=True,exclude_unset= True,mode="json")

@@ -22,3 +22,12 @@ class UpdateIncomeSource(BaseModel):
     amount : Optional[float] = Field(None, description="Amount that will be credited")
     accountID : Optional[str] = Field(None, description="Bank Account ID where the money be credited")
     incomeSourceStatus : Optional[bool] = Field(None, description="Indicate weather the income is still valid")
+
+class IncomeSourceFilter(BaseModel):
+    incomeSourceStatus: Optional[bool] = None
+    accountID: Optional[str] = None
+    sourceName: Optional[str] = None
+    creditedDateFrom: Optional[int] = None
+    creditedDateTo: Optional[int] = None
+    minAmount: Optional[float] = None
+    maxAmount: Optional[float] = None

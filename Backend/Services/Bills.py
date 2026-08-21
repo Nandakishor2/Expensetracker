@@ -1,8 +1,9 @@
 from Database.Bills import addNewBill, getBill, getBillList, updateBill, deleteBill
 from Responses.Bills import CreateBillResponse, GetBillResponse, UpdateBillResponse, DeleteBillResponse
-from Models.Bills import Bill, CreateBills, UpdateBills
+from Models.Bills import Bill, CreateBills, UpdateBills, BillFilter
 from Schema.Bills import BillSchema
 from Utils.GenerateUUID import generateUUID
+from typing import Optional
 
 
 async def handleCreateBill(createBill : CreateBills) -> CreateBillResponse:
@@ -24,8 +25,8 @@ async def handleGetBill(billID : str) -> GetBillResponse:
         bill = Bill(**result)
     )
 
-async def handleGetBillList() -> GetBillResponse:
-    result : list[dict] = await getBillList()
+async def handleGetBillList(filters: Optional[BillFilter] = None) -> GetBillResponse:
+    result : list[dict] = await getBillList(filters)
     return GetBillResponse(
         statusCode = 200,
         message = "Bill list fetched successfully",

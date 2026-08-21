@@ -1,8 +1,9 @@
 from Database.IncomeSource import addNewIncomeSource,getIncomeSource,getIncomeSourceList,updateIncomeSource,deleteIncomeSource
 from Responses.IncomeSource import CreateIncomeSourceResponse,GetIncomeSourceResponse,UpdateIncomeSourceResponse,DeleteIncomeSourceResponse
-from Models.IncomeSource import IncomeSource, CreateIncomeSource, UpdateIncomeSource
+from Models.IncomeSource import IncomeSource, CreateIncomeSource, UpdateIncomeSource, IncomeSourceFilter
 from Schema.IncomeSource import IncomeSourceSchema
 from Utils.GenerateUUID import generateUUID
+from typing import Optional
 
 
 async def handleCreateIncomeSource(createIncomeSource : CreateIncomeSource) -> CreateIncomeSourceResponse:
@@ -24,8 +25,8 @@ async def handleGetIncomeSource(incomeSourceID : str) -> GetIncomeSourceResponse
         incomeSource = IncomeSource(**result)
     )
 
-async def handleGetIncomeSourceList() -> GetIncomeSourceResponse:
-    result : list[dict] = await getIncomeSourceList()
+async def handleGetIncomeSourceList(filters: Optional[IncomeSourceFilter] = None) -> GetIncomeSourceResponse:
+    result : list[dict] = await getIncomeSourceList(filters)
     return GetIncomeSourceResponse(
         statusCode = 200,
         message = "Income source list fetched successfully",

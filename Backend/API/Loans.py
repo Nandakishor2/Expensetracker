@@ -1,14 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from Responses.Loans import GetLoanDetailsResponse,CreateNewLoanResponse
 from Services.Loans import handleGetAllLoans,handleCreateLoanDetails,handleDeleteLoanDetails,handleGetLoanDetails,handleUpdateLoanDetails
-from Models.Loans import Loans,UpdateLoan
+from Models.Loans import Loans,UpdateLoan, LoanFilter
 
 loanRouter = APIRouter(prefix="/loans",tags=["Loans"])
 
 @loanRouter.get("/")
-async def getLoanDetails():
-    response : GetLoanDetailsResponse = await handleGetAllLoans()
+async def getLoanDetails(filters: LoanFilter = Depends()):
+    response : GetLoanDetailsResponse = await handleGetAllLoans(filters)
     return JSONResponse(
         status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,mode="json"),

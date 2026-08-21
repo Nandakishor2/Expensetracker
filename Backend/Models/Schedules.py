@@ -39,3 +39,14 @@ class UpdateSchedule(BaseModel):
     transactionType:Optional[TransactionTypeEnum] = Field(default=None,description="Credit / Debit")
     amount:Optional[float] = Field(default=None,description="Amount that is to be transacted")
     sessionStatus:Optional[StatusEnum] = Field(default=None,description="Status Enum ")
+
+class ScheduleFilter(BaseModel):
+    sessionStatus: Optional[StatusEnum] = None
+    transactionType: Optional[TransactionTypeEnum] = None
+    dueDateFrom: Optional[str] = None
+    dueDateTo: Optional[str] = None
+    loanID: Optional[str] = None
+    billID: Optional[str] = None
+    incomeID: Optional[str] = None
+    minAmount: Optional[float] = None
+    maxAmount: Optional[float] = None

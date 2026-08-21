@@ -1,11 +1,13 @@
 from Connections.MongoDB import getMongoDBConnection
-from Models.CreditHistory import CreditHistory,UpdateCreditHistory
+from Models.CreditHistory import CreditHistory,UpdateCreditHistory, CreditHistoryFilter
 from Schema.CreditHistory import CreditHistorySchema
 from pymongo.errors import DuplicateKeyError
 from Exceptions.pymongo import DuplicateKeyException,DatabaseWriteException,DatabaseReadException,DatabaseUpdateException,DatabaseDeleteException
 import logging
 from pymongo import ReturnDocument
 from datetime import datetime,timezone
+from typing import Optional
+from Utils.DateTime import ensure_utc
 
 async def insertCreditHistory(creditHistory : CreditHistorySchema) -> str:
     try:
@@ -29,10 +31,45 @@ async def insertCreditHistory(creditHistory : CreditHistorySchema) -> str:
         logging.exception("Could not insert Credit History")
         raise DatabaseWriteException(message="Could not insert Credit History") from e
 
-async def getCreditHistory() -> list[dict]:
+async def getCreditHistory(filters: Optional[CreditHistoryFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        result = await mongoDB["CreditHistory"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.dueCleared is not None:
+                query["dueCleared"] = filters.dueCleared
+            if filters.peopleID:
+                query["peopleID"] = filters.peopleID
+            if filters.creditPaymentMode:
+                query["creditPaymentMode"] = filters.creditPaymentMode
+            if filters.repaymentMode:
+                query["repaymentMode"] = filters.repaymentMode
+            if filters.recievedDateFrom is not None or filters.recievedDateTo is not None:
+                query["recievedDate"] = {}
+                if filters.recievedDateFrom is not None:
+                    query["recievedDate"]["$gte"] = ensure_utc(filters.recievedDateFrom)
+                if filters.recievedDateTo is not None:
+                    query["recievedDate"]["$lte"] = ensure_utc(filters.recievedDateTo)
+            if filters.dueDateFrom is not None or filters.dueDateTo is not None:
+                query["dueDate"] = {}
+                if filters.dueDateFrom is not None:
+                    query["dueDate"]["$gte"] = ensure_utc(filters.dueDateFrom)
+                if filters.dueDateTo is not None:
+                    query["dueDate"]["$lte"] = ensure_utc(filters.dueDateTo)
+            if filters.dueClearedDateFrom is not None or filters.dueClearedDateTo is not None:
+                query["dueClearedDate"] = {}
+                if filters.dueClearedDateFrom is not None:
+                    query["dueClearedDate"]["$gte"] = ensure_utc(filters.dueClearedDateFrom)
+                if filters.dueClearedDateTo is not None:
+                    query["dueClearedDate"]["$lte"] = ensure_utc(filters.dueClearedDateTo)
+            if filters.minAmount is not None or filters.maxAmount is not None:
+                query["amount"] = {}
+                if filters.minAmount is not None:
+                    query["amount"]["$gte"] = filters.minAmount
+                if filters.maxAmount is not None:
+                    query["amount"]["$lte"] = filters.maxAmount
+
+        result = await mongoDB["CreditHistory"].find(query).to_list(length=None)
 
         return result
     except Exception as e:

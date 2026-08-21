@@ -11,8 +11,8 @@ export async function createAccount(accountDetails: CreateAccount): Promise<Upda
     return axiosClient.post("/accounts/create", accountDetails);
 }
 
-export async function getAccountDetails(): Promise<GetAccountDetailsResponse> {
-    return axiosClient.get("/accounts/");
+export async function getAccountDetails(filters?: any): Promise<GetAccountDetailsResponse> {
+    return axiosClient.get("/accounts/", { params: filters });
 }
 
 export async function updateAccountDetails(accountDetails: UpdateAccount): Promise<UpdateAccountDetailsResponse> {

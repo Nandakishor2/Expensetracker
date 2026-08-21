@@ -18,6 +18,7 @@ function ListBills({ billList, onEditBill, onDeleteBill }: billListType) {
                         <th className="text-left"><Text color="primary" size="body">Organization</Text></th>
                         <th className="text-left"><Text color="primary" size="body">Description</Text></th>
                         <th className="text-left"><Text color="primary" size="body">Due Date</Text></th>
+                        <th className="text-left"><Text color="primary" size="body">Status</Text></th>
                         <th className="text-left"><Text color="primary" size="body">Actions</Text></th>
                     </tr>
                 </thead>
@@ -33,7 +34,10 @@ function ListBills({ billList, onEditBill, onDeleteBill }: billListType) {
                                         <Text color="primary" size="label">{row.description}</Text>
                                     </td>
                                     <td className="pt-4 pb-4">
-                                        <Text color="primary" size="label">{row.dueDate ? new Date(row.dueDate).toISOString().split("T")[0] : ""}</Text>
+                                        <Text color="primary" size="label">{row.dueDate}</Text>
+                                    </td>
+                                    <td className="pt-4 pb-4">
+                                        <Text color="primary" size="label">{row.isActive ? "Active" : "Inactive"}</Text>
                                     </td>
                                     <td className="flex gap-4 pt-4 pb-4">
                                         <button
@@ -57,7 +61,7 @@ function ListBills({ billList, onEditBill, onDeleteBill }: billListType) {
                             ))
                         ) : (
                             <tr className="text-center">
-                                <td colSpan={4} className="pt-16 pb-16 text-center">
+                                <td colSpan={5} className="pt-16 pb-16 text-center">
                                     <Text color="danger" size="heading">
                                         <h1>There are no bills to display</h1>
                                     </Text>

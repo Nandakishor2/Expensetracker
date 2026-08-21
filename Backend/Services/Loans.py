@@ -1,9 +1,11 @@
 from Responses.Loans import CreateNewLoanResponse,GetLoanDetailsResponse,UpdateLoanDetailsResponse,DeleteLoanDetailsResponse
 from Database.Loans import getAllLoanDetails,insertLoanDetails,findLoanDetails,updateLoanDetails,deleteLoanDetails
-from Models.Loans import Loans,UpdateLoan
+from Models.Loans import Loans,UpdateLoan, LoanFilter
 from Schema.Loans import LoanSchema
-async def handleGetAllLoans() -> GetLoanDetailsResponse:
-    loanDetails : list[dict] = await getAllLoanDetails()
+from typing import Optional
+
+async def handleGetAllLoans(filters: Optional[LoanFilter] = None) -> GetLoanDetailsResponse:
+    loanDetails : list[dict] = await getAllLoanDetails(filters)
     return GetLoanDetailsResponse(
         statusCode = 200,
         message = "Loan details fetched successfully",

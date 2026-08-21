@@ -8,8 +8,8 @@ import type {
     DeleteBillResponse 
 } from "../Components/Bills/Types";
 
-export async function getBills(): Promise<GetBillResponse> {
-    return axiosClient.get("/Bills/");
+export async function getBills(filters?: any): Promise<GetBillResponse> {
+    return axiosClient.get("/Bills/", { params: filters });
 }
 
 export async function getBillDetails(billID: string): Promise<GetBillResponse> {

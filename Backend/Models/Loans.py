@@ -1,6 +1,7 @@
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field,field_validator
 from datetime import datetime
 from typing import Optional
+from Utils.DateTime import ensure_utc
 
 class Loans(BaseModel):
     loanID : str = Field(..., description="Unique ID for loan")
@@ -15,6 +16,11 @@ class Loans(BaseModel):
     emiAmount : float = Field(..., description="EMI Amount payable")
     activeStatus : bool = Field(..., description="Loan Status")
 
+    @field_validator("startDate", "endDate", mode="after", check_fields=False)
+    @classmethod
+    def normalize_datetimes(cls, value: Optional[datetime]) -> Optional[datetime]:
+        return ensure_utc(value)
+
 class UpdateLoan(BaseModel):
     accountID : Optional[str] = Field(None,description="Amount Credited and EMI Deduction bank Account ")
     companyName : Optional[str] = Field(None, description="Name of the company who issued the loan")
@@ -24,3 +30,19 @@ class UpdateLoan(BaseModel):
     emiDate : Optional[int] = Field(None, description="EMI Due Date")
     rateOfIntrest : Optional[float] = Field(None, description="Rate of Intrest offered by the loan")
     emiAmount : Optional[float] = Field(None, description="EMI Amount payable")
+
+    @field_validator("startDate", mode="after", check_fields=False)
+    @classmethod
+    def normalize_datetimes(cls, value: Optional[datetime]) -> Optional[datetime]:
+        return ensure_utc(value)
+
+class LoanFilter(BaseModel):
+    activeStatus: Optional[bool] = None
+    accountID: Optional[str] = None
+    companyName: Optional[str] = None
+    startDateFrom: Optional[datetime] = None
+    startDateTo: Optional[datetime] = None
+    endDateFrom: Optional[datetime] = None
+    endDateTo: Optional[datetime] = None
+    minLoanAmount: Optional[float] = None
+    maxLoanAmount: Optional[float] = None

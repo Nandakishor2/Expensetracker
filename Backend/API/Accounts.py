@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from Responses.Account import CreateAccountResponse,GetAccountDetailsResponse,UpdateAccountResponse,DeleteAccountResponse
 from fastapi.responses import JSONResponse
-from Models.Accounts import Account,UpdateAccount
+from Models.Accounts import Account,UpdateAccount, AccountFilter
 from Services.Accounts import handleInsertAccountDetails,handleGetAccountDetails,handleUpdateAccountDetails,handleDeleteAccountDetails
 accountRouter = APIRouter(prefix="/accounts",tags=["Accounts"])
 
@@ -30,8 +30,8 @@ async def deleteAccount(accountID : str):
     )
 
 @accountRouter.get("/")
-async def getAccountDetails():
-    response : GetAccountDetailsResponse = await handleGetAccountDetails()
+async def getAccountDetails(filters: AccountFilter = Depends()):
+    response : GetAccountDetailsResponse = await handleGetAccountDetails(filters)
     return JSONResponse(
         status_code = response.statusCode,
         content = response.model_dump(exclude_unset=True,exclude_none=True,exclude_defaults=True)

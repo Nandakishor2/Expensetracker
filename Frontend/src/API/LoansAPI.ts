@@ -8,8 +8,8 @@ import type {
     DeleteLoanDetailsResponse 
 } from "../Components/Loans/Types";
 
-export async function getLoanDetails(): Promise<getLoanDetailsResponse> {
-    return axiosClient.get("/loans/");
+export async function getLoanDetails(filters?: any): Promise<getLoanDetailsResponse> {
+    return axiosClient.get("/loans/", { params: filters });
 }
 
 export async function createLoanDetails(loanDetails: CreateLoan): Promise<CreateNewLoanResponse> {

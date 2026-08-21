@@ -6,7 +6,7 @@ class PeopleBase(BaseModel):
     name : str = Field(...,description="Name of the person")
     contactNumber : str = Field(...,description="Contact information of the person")
     whatsappNumber : str = Field(...,description="Whatsapp Number.")
-    email : Optional[EmailStr]
+    email : Optional[EmailStr] = Field(default=None,description="Email ID")
 
 class People(PeopleBase):
     personID : str = Field(...,description="ID of the person")
@@ -18,3 +18,6 @@ class UpdatePeople(BaseModel) :
     contactNumber : Optional[str] = Field(default=None,description="Contact information of the person")
     whatsappNumber : Optional[str] = Field(default=None,description="Whatsapp Number.")
     email : Optional[EmailStr] = Field(default=None,description="Email Address")
+
+class PeopleFilter(BaseModel):
+    name: Optional[str] = None

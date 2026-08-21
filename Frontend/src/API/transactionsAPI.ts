@@ -8,8 +8,8 @@ import type {
     DeleteTransactionResponse 
 } from "../Components/Transactions/Types";
 
-export async function getTransactions(): Promise<GetTransactionResponse> {
-    return axiosClient.get("/Transactions/");
+export async function getTransactions(filters?: any): Promise<GetTransactionResponse> {
+    return axiosClient.get("/Transactions/", { params: filters });
 }
 
 export async function getTransactionDetails(transactionID: string): Promise<GetTransactionResponse> {

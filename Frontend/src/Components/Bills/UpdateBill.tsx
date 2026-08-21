@@ -13,7 +13,7 @@ type BillUpdateProps = {
 function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) {
     const [details, setDetails] = useState<BillDetails>({
         ...existingDetails,
-        dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
+        dueDate: existingDetails.dueDate
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { showSuccess, showFailure } = useAPIResponse()
@@ -21,7 +21,7 @@ function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) 
     useEffect(() => {
         setDetails({
             ...existingDetails,
-            dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
+            dueDate: existingDetails.dueDate
         })
     }, [existingDetails])
 
@@ -44,7 +44,10 @@ function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) 
                 billDetails={details}
                 onChange={(e) => {
                     const { name, value } = e.target
-                    setDetails((prev) => ({ ...prev, [name]: value }))
+                    setDetails((prev) => ({ 
+                        ...prev, 
+                        [name]: name === "dueDate" ? (value === "" ? 0 : parseInt(value, 10)) : value 
+                    }))
                 }} 
             />
 
@@ -53,7 +56,7 @@ function UpdateBill({ existingDetails, refreshTableFunction }: BillUpdateProps) 
                 <Button type="button" variant="ghost" onClick={() => {
                     setDetails({
                         ...existingDetails,
-                        dueDate: existingDetails.dueDate ? String(existingDetails.dueDate).split("T")[0] : ""
+                        dueDate: existingDetails.dueDate
                     })
                 }} className="text-sm" disabled={isSubmitting}>Reset</Button>
                 <Button type="button" variant="primary" onClick={handleUpdate} className="text-sm" disabled={isSubmitting}>

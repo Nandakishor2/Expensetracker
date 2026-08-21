@@ -2,7 +2,8 @@ type BillDetails = {
     billID: string
     organization: string
     description: string
-    dueDate: string | Date
+    dueDate: number
+    isActive: boolean
 }
 
 type CreateBills = Omit<BillDetails, "billID">

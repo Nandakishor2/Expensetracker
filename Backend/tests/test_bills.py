@@ -9,7 +9,7 @@ async def createBill(client) -> str:
     payload = {
         "organization": f"Water Corp {uuid.uuid4().hex[:4]}",
         "description": "Monthly water charges",
-        "dueDate": "2026-08-15"
+        "dueDate": 15
     }
     response = await client.post("/Bills/", json=payload)
     assert response.status_code == 200
@@ -38,7 +38,7 @@ async def updateBill(client, billID: str) -> dict:
     payload = {
         "organization": "Water Corp Updated",
         "description": "Updated monthly water charges",
-        "dueDate": "2026-08-25"
+        "dueDate": 25
     }
     response = await client.put(f"/Bills/{billID}", json=payload)
     assert response.status_code == 200
@@ -48,7 +48,7 @@ async def updateBill(client, billID: str) -> dict:
     assert bill is not None
     assert bill.get("organization") == "Water Corp Updated"
     assert bill.get("description") == "Updated monthly water charges"
-    assert bill.get("dueDate") == "2026-08-25"
+    assert bill.get("dueDate") == 25
     return bill
 
 async def deleteBill(client, billID: str) -> None:
@@ -71,7 +71,7 @@ async def test_get_bills(client):
     bill = await getBill(client, bill_id)
     assert "Water Corp" in bill.get("organization")
     assert bill.get("description") == "Monthly water charges"
-    assert bill.get("dueDate") == "2026-08-15"
+    assert bill.get("dueDate") == 15
 
 @pytest.mark.asyncio
 async def test_update_bills(client):
@@ -80,7 +80,7 @@ async def test_update_bills(client):
     bill = await getBill(client, bill_id)
     assert bill.get("organization") == "Water Corp Updated"
     assert bill.get("description") == "Updated monthly water charges"
-    assert bill.get("dueDate") == "2026-08-25"
+    assert bill.get("dueDate") == 25
 
 @pytest.mark.asyncio
 async def test_delete_bills(client):

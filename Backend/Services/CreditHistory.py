@@ -1,5 +1,5 @@
 from Database.CreditHistory import insertCreditHistory,getCreditHistory,findCreditHistory,updateCreditHistory,deleteCreditHistory
-from Models.CreditHistory import CreditHistory,CreateCreditHistory,UpdateCreditHistory
+from Models.CreditHistory import CreditHistory,CreateCreditHistory,UpdateCreditHistory, CreditHistoryFilter
 from Schema.CreditHistory import CreditHistorySchema
 from Utils.GenerateUUID import generateUUID
 from Responses.CreditHistory import CreateCreditHistoryResponse,GetCreditHistoryResponse,UpdateCreditHistoryResponse,DeleteCreditHistoryResponse
@@ -23,9 +23,9 @@ async def handleCreateCreditHistory(creditHistory : CreateCreditHistory) -> Crea
 
     
 
-async def handleGetCreditHistory() -> GetCreditHistoryResponse:
+async def handleGetCreditHistory(filters: Optional[CreditHistoryFilter] = None) -> GetCreditHistoryResponse:
     """Handles the retrieval of all credit histories"""
-    creditHistoryList : list[dict] = await getCreditHistory()
+    creditHistoryList : list[dict] = await getCreditHistory(filters)
 
     response : GetCreditHistoryResponse = GetCreditHistoryResponse(
         statusCode = 200,

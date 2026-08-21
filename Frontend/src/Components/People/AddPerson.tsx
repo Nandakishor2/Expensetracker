@@ -14,7 +14,7 @@ function AddPerson({ refreshTableFunction }: AddPersonProps) {
         name: "",
         contactNumber: "",
         whatsappNumber: "",
-        email: ""
+        email: null
     }
 
     const [personDetails, setPersonDetails] = useState<CreatePerson>(defaultPersonDetails)
@@ -37,12 +37,12 @@ function AddPerson({ refreshTableFunction }: AddPersonProps) {
 
     return (
         <div className="grid sm:grid-cols-12 mt-5 gap-2">
-            <PersonFormFields 
+            <PersonFormFields
                 personDetails={personDetails}
                 onChange={(e) => {
                     const { name, value } = e.target
                     setPersonDetails((prev) => ({ ...prev, [name]: value }))
-                }} 
+                }}
             />
 
             <div className="sm:col-span-9"></div>

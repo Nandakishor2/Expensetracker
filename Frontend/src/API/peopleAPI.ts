@@ -8,8 +8,8 @@ import type {
     DeletePersonDetailsResponse 
 } from "../Components/People/Types";
 
-export async function getPeople(): Promise<GetPeopleDetailsResponse> {
-    return axiosClient.get("/people/");
+export async function getPeople(filters?: any): Promise<GetPeopleDetailsResponse> {
+    return axiosClient.get("/people/", { params: filters });
 }
 
 export async function createPerson(people: CreatePerson): Promise<CreatePersonDetailsResponse> {

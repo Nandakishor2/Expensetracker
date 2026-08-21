@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from Services.CreditHistory import handleCreateCreditHistory,handleDeleteCreditHistory,handleFindCreditHistory,handleGetCreditHistory,handleUpdateCreditHistory
-from Models.CreditHistory import CreditHistory,CreateCreditHistory,UpdateCreditHistory
+from Models.CreditHistory import CreditHistory,CreateCreditHistory,UpdateCreditHistory, CreditHistoryFilter
 from fastapi.responses import JSONResponse
 
 from Responses.CreditHistory import CreateCreditHistoryResponse,UpdateCreditHistoryResponse,DeleteCreditHistoryResponse,GetCreditHistoryResponse
@@ -8,8 +8,8 @@ from Responses.CreditHistory import CreateCreditHistoryResponse,UpdateCreditHist
 creditHistoryRouter = APIRouter(prefix="/creditHistory",tags=["Credit History"])
 
 @creditHistoryRouter.get("/")
-async def getCreditHistory():
-    response : GetCreditHistoryResponse= await handleGetCreditHistory()
+async def getCreditHistory(filters: CreditHistoryFilter = Depends()):
+    response : GetCreditHistoryResponse= await handleGetCreditHistory(filters)
     return JSONResponse(status_code=response.statusCode,content=response.model_dump(exclude_none=True,mode="json"))
 
 

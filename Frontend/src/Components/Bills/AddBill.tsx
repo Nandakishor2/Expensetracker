@@ -13,7 +13,8 @@ function AddBill({ refreshTableFunction }: AddBillProps) {
     const defaultDetails: CreateBills = {
         organization: "",
         description: "",
-        dueDate: new Date().toISOString().split("T")[0]
+        dueDate: 1,
+        isActive: true
     }
 
     const [details, setDetails] = useState<CreateBills>(defaultDetails)
@@ -40,7 +41,10 @@ function AddBill({ refreshTableFunction }: AddBillProps) {
                 billDetails={details}
                 onChange={(e) => {
                     const { name, value } = e.target
-                    setDetails((prev) => ({ ...prev, [name]: value }))
+                    setDetails((prev) => ({ 
+                        ...prev, 
+                        [name]: name === "dueDate" ? (value === "" ? 0 : parseInt(value, 10)) : value 
+                    }))
                 }} 
             />
 

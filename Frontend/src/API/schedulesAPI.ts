@@ -8,8 +8,8 @@ import type {
     DeleteScheduleResponse 
 } from "../Components/Schedules/Types";
 
-export async function getSchedules(): Promise<GetScheduleResponse> {
-    return axiosClient.get("/Schedules/");
+export async function getSchedules(filters?: any): Promise<GetScheduleResponse> {
+    return axiosClient.get("/Schedules/", { params: filters });
 }
 
 export async function getScheduleDetails(scheduleID: string): Promise<GetScheduleResponse> {

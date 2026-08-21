@@ -1,8 +1,9 @@
 from Database.Transactions import addNewTransaction, getTransaction, getTransactionList, updateTransaction, deleteTransaction
 from Responses.Transactions import CreateTransactionResponse, GetTransactionResponse, UpdateTransactionResponse, DeleteTransactionResponse
-from Models.Transactions import Transaction, TransactionBase, UpdateTransaction
+from Models.Transactions import Transaction, TransactionBase, UpdateTransaction, TransactionFilter
 from Schema.Transaction import TransactionSchema
 from Utils.GenerateUUID import generateUUID
+from typing import Optional
 
 
 async def handleCreateTransaction(createTransaction : TransactionBase) -> CreateTransactionResponse:
@@ -24,8 +25,8 @@ async def handleGetTransaction(transactionID : str) -> GetTransactionResponse:
         transaction = Transaction(**result)
     )
 
-async def handleGetTransactionList() -> GetTransactionResponse:
-    result : list[dict] = await getTransactionList()
+async def handleGetTransactionList(filters: Optional[TransactionFilter] = None) -> GetTransactionResponse:
+    result : list[dict] = await getTransactionList(filters)
     return GetTransactionResponse(
         statusCode = 200,
         message = "Transaction list fetched successfully",

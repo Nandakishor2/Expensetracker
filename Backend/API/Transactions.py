@@ -1,14 +1,15 @@
 from Responses.Transactions import CreateTransactionResponse, GetTransactionResponse, UpdateTransactionResponse, DeleteTransactionResponse
 from Services.Transactions import handleCreateTransaction, handleDeleteTransaction, handleGetTransaction, handleGetTransactionList, handleUpdateTransaction
-from Models.Transactions import TransactionBase, UpdateTransaction
+from Models.Transactions import TransactionBase, UpdateTransaction, TransactionFilter
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi import Depends
 
 transactionRouter = APIRouter(prefix="/Transactions", tags=["Transactions"])
 
 @transactionRouter.get("/")
-async def getTransactionList():
-    response : GetTransactionResponse = await handleGetTransactionList()
+async def getTransactionList(filters: TransactionFilter = Depends()):
+    response : GetTransactionResponse = await handleGetTransactionList(filters)
     return JSONResponse(
         status_code=response.statusCode,
         content=response.model_dump(exclude_none=True,exclude_unset=True,mode="json")

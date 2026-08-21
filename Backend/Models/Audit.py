@@ -1,6 +1,7 @@
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field,field_validator
 from datetime import datetime,timezone
 from typing import Optional
+from Utils.DateTime import ensure_utc
 
 class AuditFields(BaseModel):
     createdDate : datetime = Field(
@@ -11,3 +12,8 @@ class AuditFields(BaseModel):
         default=None,
         description="Record Last Modified Date"
     )
+
+    @field_validator("createdDate", "updatedDate", mode="after", check_fields=False)
+    @classmethod
+    def normalize_datetimes(cls, value: Optional[datetime]) -> Optional[datetime]:
+        return ensure_utc(value)

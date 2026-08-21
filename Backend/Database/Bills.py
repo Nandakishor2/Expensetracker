@@ -2,8 +2,9 @@ from Schema.Bills import BillSchema
 from Exceptions.pymongo import DatabaseReadException, DatabaseWriteException, DatabaseDeleteException, DatabaseUpdateException
 from Connections.MongoDB import getMongoDBConnection
 import logging
-from Models.Bills import UpdateBills
+from Models.Bills import UpdateBills, BillFilter
 from pymongo import ReturnDocument
+from typing import Optional
 
 
 async def addNewBill(bill : BillSchema) -> str:
@@ -34,10 +35,23 @@ async def getBill(billID : str) -> dict:
         logging.exception("Failed to get bill")
         raise DatabaseReadException("Error in getting bill")
 
-async def getBillList() -> list[dict]:
+async def getBillList(filters: Optional[BillFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        result  = await mongoDB["Bills"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.isActive is not None:
+                query["isActive"] = filters.isActive
+            if filters.dueDateFrom is not None or filters.dueDateTo is not None:
+                query["dueDate"] = {}
+                if filters.dueDateFrom is not None:
+                    query["dueDate"]["$gte"] = filters.dueDateFrom
+                if filters.dueDateTo is not None:
+                    query["dueDate"]["$lte"] = filters.dueDateTo
+            if filters.organization:
+                query["organization"] = {"$regex": filters.organization, "$options": "i"}
+        
+        result  = await mongoDB["Bills"].find(query).to_list(length=None)
         if result is not None:
             return result
         raise DatabaseReadException("Failed to get bill list")

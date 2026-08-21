@@ -8,8 +8,8 @@ import type {
     DeleteCreditHistoryResponse 
 } from "../Components/CreditHistory/Types";
 
-export async function getCreditHistory(): Promise<GetCreditHistoryResponse> {
-    return axiosClient.get("/creditHistory/");
+export async function getCreditHistory(filters?: any): Promise<GetCreditHistoryResponse> {
+    return axiosClient.get("/creditHistory/", { params: filters });
 }
 
 export async function findCreditHistory(creditHistoryID: string): Promise<GetCreditHistoryResponse> {

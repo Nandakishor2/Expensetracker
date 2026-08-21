@@ -1,14 +1,15 @@
 from Responses.Schedules import CreateScheduleResponse, GetScheduleResponse, UpdateScheduleResponse, DeleteScheduleResponse
 from Services.Schedules import handleCreateSchedule, handleDeleteSchedule, handleGetSchedule, handleGetScheduleList, handleUpdateSchedule
-from Models.Schedules import CreateSchedule, UpdateSchedule
+from Models.Schedules import CreateSchedule, UpdateSchedule, ScheduleFilter
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi import Depends
 
 scheduleRouter = APIRouter(prefix="/Schedules", tags=["Schedules"])
 
 @scheduleRouter.get("/")
-async def getScheduleList():
-    response : GetScheduleResponse = await handleGetScheduleList()
+async def getScheduleList(filters: ScheduleFilter = Depends()):
+    response : GetScheduleResponse = await handleGetScheduleList(filters)
     return JSONResponse(
         status_code=response.statusCode,
         content=response.model_dump(exclude_none=True,exclude_unset=True,mode="json")

@@ -8,8 +8,8 @@ import type {
     DeleteIncomeSourceResponse 
 } from "../Components/IncomeSource/Types";
 
-export async function getIncomeSources(): Promise<GetIncomeSourceResponse> {
-    return axiosClient.get("/IncomeSource/");
+export async function getIncomeSources(filters?: any): Promise<GetIncomeSourceResponse> {
+    return axiosClient.get("/IncomeSource/", { params: filters });
 }
 
 export async function getIncomeSourceDetails(incomeSourceID: string): Promise<GetIncomeSourceResponse> {

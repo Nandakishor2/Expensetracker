@@ -57,6 +57,19 @@ function CreditHistoryFormFields({ creditHistoryDetails, onChange }: CreditHisto
             </div>
             <div className="sm:col-span-4">
                 <TextGroup 
+                    id="txtAmount"
+                    name="amount"
+                    labelName="AMOUNT"
+                    value={String(creditHistoryDetails.amount || "")}
+                    placeholder="Provide amount"
+                    type="number"
+                    onChange={onChange}
+                />
+            </div>
+
+            {/* Row 2 */}
+            <div className="sm:col-span-4">
+                <TextGroup 
                     id="txtCreditPaymentMode"
                     name="creditPaymentMode"
                     labelName="CREDIT PAYMENT MODE"
@@ -65,8 +78,6 @@ function CreditHistoryFormFields({ creditHistoryDetails, onChange }: CreditHisto
                     onChange={onChange}
                 />
             </div>
-
-            {/* Row 2 */}
             <div className="sm:col-span-4">
                 <TextGroup 
                     id="txtRecievedDate"
@@ -87,6 +98,8 @@ function CreditHistoryFormFields({ creditHistoryDetails, onChange }: CreditHisto
                     onChange={onChange}
                 />
             </div>
+
+            {/* Row 3 */}
             <div className="sm:col-span-4">
                 <SelectGroup 
                     id="drpDueCleared"
@@ -107,6 +120,7 @@ function CreditHistoryFormFields({ creditHistoryDetails, onChange }: CreditHisto
                     }}
                 />
             </div>
+            <div className="sm:col-span-8"></div>
 
             {/* Repayment details conditional fields */}
             {isCleared && (

@@ -13,6 +13,7 @@ function AddCreditHistory({ refreshTableFunction }: AddCreditHistoryProps) {
     const defaultDetails: CreateCreditHistory = {
         peopleID: "",
         purpose: "",
+        amount: 0,
         creditPaymentMode: "",
         recievedDate: new Date().toISOString().split("T")[0],
         dueDate: new Date().toISOString().split("T")[0],
@@ -68,4 +69,3 @@ function AddCreditHistory({ refreshTableFunction }: AddCreditHistoryProps) {
 }
 
 export default AddCreditHistory
-

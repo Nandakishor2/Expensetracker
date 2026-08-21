@@ -1,14 +1,14 @@
 from Responses.People import GetPeopleDetailsResponse,CreatePersonDetailsResponse,UpdatePersonDetailsResponse,DeletePersonDetailsResponse
 from Services.People import handleCreatePersonDetails,handleDeletePersonDetails,handleGetPeopleDetails,handleUpdatePersonDetails
-from Models.People import People,UpdatePeople,CreatePerson
+from Models.People import People,UpdatePeople,CreatePerson, PeopleFilter
 from fastapi.responses import JSONResponse
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 peopleRouter = APIRouter(prefix="/people",tags=["People"])
 
 @peopleRouter.get("/")
-async def getPeople() -> GetPeopleDetailsResponse:
-    response : GetPeopleDetailsResponse = await handleGetPeopleDetails()
+async def getPeople(filters: PeopleFilter = Depends()) -> GetPeopleDetailsResponse:
+    response : GetPeopleDetailsResponse = await handleGetPeopleDetails(filters)
     return JSONResponse(
         status_code= response.statusCode,
         content=response.model_dump()

@@ -2,8 +2,9 @@ from Schema.Schedules import SchedulesSchema
 from Exceptions.pymongo import DatabaseReadException, DatabaseWriteException, DatabaseDeleteException, DatabaseUpdateException
 from Connections.MongoDB import getMongoDBConnection
 import logging
-from Models.Schedules import UpdateSchedule
+from Models.Schedules import UpdateSchedule, ScheduleFilter
 from pymongo import ReturnDocument
+from typing import Optional
 
 
 async def addNewSchedule(schedule : SchedulesSchema) -> str:
@@ -34,10 +35,35 @@ async def getSchedule(scheduleID : str) -> dict:
         logging.exception("Failed to get schedule")
         raise DatabaseReadException("Error in getting schedule")
 
-async def getScheduleList() -> list[dict]:
+async def getScheduleList(filters: Optional[ScheduleFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        result  = await mongoDB["Schedules"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.sessionStatus:
+                query["sessionStatus"] = filters.sessionStatus
+            if filters.transactionType:
+                query["transactionType"] = filters.transactionType
+            if filters.dueDateFrom is not None or filters.dueDateTo is not None:
+                query["dueDate"] = {}
+                if filters.dueDateFrom is not None:
+                    query["dueDate"]["$gte"] = filters.dueDateFrom
+                if filters.dueDateTo is not None:
+                    query["dueDate"]["$lte"] = filters.dueDateTo
+            if filters.loanID:
+                query["loanID"] = filters.loanID
+            if filters.billID:
+                query["billID"] = filters.billID
+            if filters.incomeID:
+                query["incomeID"] = filters.incomeID
+            if filters.minAmount is not None or filters.maxAmount is not None:
+                query["amount"] = {}
+                if filters.minAmount is not None:
+                    query["amount"]["$gte"] = filters.minAmount
+                if filters.maxAmount is not None:
+                    query["amount"]["$lte"] = filters.maxAmount
+
+        result  = await mongoDB["Schedules"].find(query).to_list(length=None)
         if result is not None:
             return result
         raise DatabaseReadException("Failed to get schedule list")

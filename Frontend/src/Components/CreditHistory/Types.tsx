@@ -2,6 +2,7 @@ type CreditHistoryDetails = {
     creditHistoryID: string
     peopleID: string
     purpose: string
+    amount: number
     creditPaymentMode: string
     recievedDate: string | Date
     dueDate: string | Date

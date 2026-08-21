@@ -2,10 +2,12 @@ from Connections.MongoDB import getMongoDBConnection
 from Schema.Accounts import AccountSchema
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
-from Models.Accounts import UpdateAccount
+from Models.Accounts import UpdateAccount, AccountFilter
 from pymongo.errors import DuplicateKeyError
 from Exceptions.pymongo import DatabaseWriteException,DuplicateKeyException,DatabaseReadException,DatabaseUpdateException
 from Exceptions.resource import ResourceNotFoundException
+from typing import Optional
+import logging
 
 async def inserAccountDetails(accountDetails :AccountSchema ) -> str:
     try:
@@ -37,10 +39,23 @@ async def findAccountDetails(accountID : str) -> dict:
         logging.exception(e)
         raise DatabaseReadException("Issue while fetching data from database.") from e
 
-async def getAllAccountDetails() -> list:
+async def getAllAccountDetails(filters: Optional[AccountFilter] = None) -> list:
     try:
         mongoDB = getMongoDBConnection()
-        accountDetailsList : list | None = await mongoDB["Accounts"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.accountType:
+                query["accountType"] = filters.accountType
+            if filters.bankName:
+                query["bankName"] = {"$regex": filters.bankName, "$options": "i"}
+            if filters.minClosingBalance is not None or filters.maxClosingBalance is not None:
+                query["closingBalance"] = {}
+                if filters.minClosingBalance is not None:
+                    query["closingBalance"]["$gte"] = filters.minClosingBalance
+                if filters.maxClosingBalance is not None:
+                    query["closingBalance"]["$lte"] = filters.maxClosingBalance
+                    
+        accountDetailsList : list | None = await mongoDB["Accounts"].find(query).to_list(length=None)
 
         if accountDetailsList is None:
             raise ValueError("Accounts Not Found")

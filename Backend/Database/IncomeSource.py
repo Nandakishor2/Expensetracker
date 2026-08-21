@@ -2,8 +2,9 @@ from Schema.IncomeSource import IncomeSourceSchema
 from Exceptions.pymongo import DatabaseReadException,DatabaseWriteException,DatabaseDeleteException,DatabaseUpdateException
 from Connections.MongoDB import getMongoDBConnection
 import logging
-from Models.IncomeSource import UpdateIncomeSource
+from Models.IncomeSource import UpdateIncomeSource, IncomeSourceFilter
 from pymongo import ReturnDocument
+from typing import Optional
 
 
 async def addNewIncomeSource(incomesource : IncomeSourceSchema) -> str:
@@ -34,10 +35,31 @@ async def getIncomeSource(incomeSourceID : str) -> dict:
         logging.exception("Failed to get income source")
         raise DatabaseReadException("Error in getting income source")
 
-async def getIncomeSourceList() -> list[dict]:
+async def getIncomeSourceList(filters: Optional[IncomeSourceFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        result  = await mongoDB["IncomeSource"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.incomeSourceStatus is not None:
+                query["incomeSourceStatus"] = filters.incomeSourceStatus
+            if filters.accountID:
+                query["accountID"] = filters.accountID
+            if filters.sourceName:
+                query["sourceName"] = {"$regex": filters.sourceName, "$options": "i"}
+            if filters.creditedDateFrom is not None or filters.creditedDateTo is not None:
+                query["creditedDate"] = {}
+                if filters.creditedDateFrom is not None:
+                    query["creditedDate"]["$gte"] = filters.creditedDateFrom
+                if filters.creditedDateTo is not None:
+                    query["creditedDate"]["$lte"] = filters.creditedDateTo
+            if filters.minAmount is not None or filters.maxAmount is not None:
+                query["amount"] = {}
+                if filters.minAmount is not None:
+                    query["amount"]["$gte"] = filters.minAmount
+                if filters.maxAmount is not None:
+                    query["amount"]["$lte"] = filters.maxAmount
+
+        result  = await mongoDB["IncomeSource"].find(query).to_list(length=None)
         if result is not None:
             return result
         raise DatabaseReadException("Failed to get income source list")

@@ -1,14 +1,15 @@
 from Responses.Bills import CreateBillResponse, GetBillResponse, UpdateBillResponse, DeleteBillResponse
 from Services.Bills import handleCreateBill, handleDeleteBill, handleGetBill, handleGetBillList, handleUpdateBill
-from Models.Bills import CreateBills, UpdateBills
+from Models.Bills import CreateBills, UpdateBills, BillFilter
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi import Depends
 
 billRouter = APIRouter(prefix="/Bills",tags=["Bills"])
 
 @billRouter.get("/")
-async def getBillList():
-    response : GetBillResponse = await handleGetBillList()
+async def getBillList(filters: BillFilter = Depends()):
+    response : GetBillResponse = await handleGetBillList(filters)
     return JSONResponse(
         status_code=response.statusCode,
         content=response.model_dump(exclude_defaults=True,exclude_none=True,exclude_unset=True)

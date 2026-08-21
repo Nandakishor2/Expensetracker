@@ -9,7 +9,9 @@ from Exceptions.pymongo import DatabaseWriteException,DatabaseReadException,Data
 from Exceptions.resource import ResourceNotFoundException
 import logging
 from pymongo.errors import DuplicateKeyError
-from Models.Loans import UpdateLoan
+from Models.Loans import UpdateLoan, LoanFilter
+from typing import Optional
+from Utils.DateTime import ensure_utc
 
 async def insertLoanDetails(loanDetails :LoanSchema ) -> str:
     try:
@@ -43,10 +45,37 @@ async def findLoanDetails(loanID : str) -> dict:
         logging.exception("Issue while finding loan Details")
         raise DatabaseReadException(message="Issue while finding loan Details")
 
-async def getAllLoanDetails() -> list[dict]:
+async def getAllLoanDetails(filters: Optional[LoanFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        loanDetailsList = await mongoDB["Loans"].find().to_list(length=None)
+        query = {}
+        if filters:
+            if filters.activeStatus is not None:
+                query["activeStatus"] = filters.activeStatus
+            if filters.accountID:
+                query["accountID"] = filters.accountID
+            if filters.companyName:
+                query["companyName"] = {"$regex": filters.companyName, "$options": "i"}
+            if filters.startDateFrom is not None or filters.startDateTo is not None:
+                query["startDate"] = {}
+                if filters.startDateFrom is not None:
+                    query["startDate"]["$gte"] = ensure_utc(filters.startDateFrom)
+                if filters.startDateTo is not None:
+                    query["startDate"]["$lte"] = ensure_utc(filters.startDateTo)
+            if filters.endDateFrom is not None or filters.endDateTo is not None:
+                query["endDate"] = {}
+                if filters.endDateFrom is not None:
+                    query["endDate"]["$gte"] = ensure_utc(filters.endDateFrom)
+                if filters.endDateTo is not None:
+                    query["endDate"]["$lte"] = ensure_utc(filters.endDateTo)
+            if filters.minLoanAmount is not None or filters.maxLoanAmount is not None:
+                query["loanAmount"] = {}
+                if filters.minLoanAmount is not None:
+                    query["loanAmount"]["$gte"] = filters.minLoanAmount
+                if filters.maxLoanAmount is not None:
+                    query["loanAmount"]["$lte"] = filters.maxLoanAmount
+
+        loanDetailsList = await mongoDB["Loans"].find(query).to_list(length=None)
 
         if loanDetailsList is None:
             raise ResourceNotFoundException(message="No Loans were found.")

@@ -54,4 +54,10 @@ class UpdateAccount(BaseModel):
         None,
         description="Actual balance when this record was created"
     )
+
+class AccountFilter(BaseModel):
+    accountType: Optional[str] = None
+    bankName: Optional[str] = None
+    minClosingBalance: Optional[float] = None
+    maxClosingBalance: Optional[float] = None
     

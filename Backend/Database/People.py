@@ -1,15 +1,21 @@
 from Connections.MongoDB import mongoDB,getMongoDBConnection
 from Schema.People import PeopleSchema
-from Models.People import UpdatePeople
+from Models.People import UpdatePeople, PeopleFilter
 from datetime import datetime,timezone
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 import logging
 from Exceptions.pymongo import DatabaseReadException,DatabaseUpdateException,DatabaseWriteException,DatabaseDeleteException,DuplicateKeyException
-async def getPeopleList(filterOptions : dict) -> list[dict]:
+from typing import Optional
+
+async def getPeopleList(filters: Optional[PeopleFilter] = None) -> list[dict]:
     try:
         mongoDB = getMongoDBConnection()
-        result = await mongoDB["People"].find(filterOptions).to_list()
+        query = {}
+        if filters:
+            if filters.name:
+                query["name"] = {"$regex": filters.name, "$options": "i"}
+        result = await mongoDB["People"].find(query).to_list()
         return result
     except Exception as e:
         raise DatabaseReadException("Issue while getting data from database.") from e

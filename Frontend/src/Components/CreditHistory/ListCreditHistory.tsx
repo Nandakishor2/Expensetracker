@@ -18,6 +18,7 @@ function ListCreditHistory({ creditHistoryList, lenderMap, onEditCreditHistory, 
                     <tr>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Lender</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Purpose</Text></th>
+                        <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Amount</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Payment Mode</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Received Date</Text></th>
                         <th className="px-4 py-3 whitespace-nowrap text-left"><Text color="primary" size="label">Due Date</Text></th>
@@ -37,6 +38,9 @@ function ListCreditHistory({ creditHistoryList, lenderMap, onEditCreditHistory, 
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-left">
                                         <Text color="primary" size="label">{row.purpose}</Text>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-left">
+                                        <Text color="primary" size="label">{row.amount}</Text>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-left">
                                         <Text color="primary" size="label">{row.creditPaymentMode}</Text>
@@ -80,7 +84,7 @@ function ListCreditHistory({ creditHistoryList, lenderMap, onEditCreditHistory, 
                             ))
                         ) : (
                             <tr className="text-center">
-                                <td colSpan={9} className="pt-16 pb-16 text-center">
+                                <td colSpan={10} className="pt-16 pb-16 text-center">
                                     <Text color="danger" size="heading">
                                         <h1>There are no credit history records to display</h1>
                                     </Text>

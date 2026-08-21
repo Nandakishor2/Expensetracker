@@ -15,3 +15,6 @@ class UpdateScheduleResponse(BaseResponse):
 
 class DeleteScheduleResponse(BaseResponse):
     pass
+
+class LoadSchedulesResponse(BaseResponse):
+    pass
